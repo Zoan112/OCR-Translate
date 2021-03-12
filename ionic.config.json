@@ -1,0 +1,7 @@
+{
+  "name": "OCR-ionic",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue"
+}
