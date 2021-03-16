@@ -1,8 +1,10 @@
+
 <template>
   <ion-page>
     <ion-header :translucent="true">
       <ion-toolbar>
         <ion-title>OCR-Translate</ion-title>
+       
       </ion-toolbar>
     </ion-header>
     
@@ -23,7 +25,7 @@
 
         <ion-fab-list side="bottom">
         <ion-fab-button @click="takePhoto()"><ion-icon :icon="camera" :md="camera"></ion-icon></ion-fab-button>
-        <ion-fab-button><ion-icon :icon="browsers" :md="browsers"></ion-icon></ion-fab-button>
+        <ion-fab-button @click="clickDebug"><ion-icon :icon="browsers" :md="browsers"></ion-icon></ion-fab-button>
       </ion-fab-list>
   
     </ion-fab>
@@ -40,6 +42,7 @@
 </template>
 
 <script>
+ /* eslint-disable */
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonFab, IonFabButton, IonIcon, 
     IonFabList, 
     IonGrid, 
@@ -54,9 +57,14 @@ import { defineComponent } from 'vue';
 
 import {add, camera, browsers, trash, close} from "ionicons/icons";
 
-import { usePhotoGallery } from '@/composables/usePhotoGallery';
+import { usePhotoGallery, sendtoVue, imageSrc } from '@/composables/usePhotoGallery';
+import { CameraSource } from '@capacitor/core';
+console.log(imageSrc)
+
+
 
 export default defineComponent({
+
   name: 'Home',
   components: {
     IonContent,
@@ -74,17 +82,65 @@ export default defineComponent({
     IonImg 
   },
   setup() {
-     const { takePhoto } = usePhotoGallery();
+     const { takePhoto} = usePhotoGallery();
+
+     const clickDebug = ()=>{
+       console.log('click from debug')
+       console.log(imageSrc)
+      /* console.log(this.imageSrc(x))*/
+     }
+
+     
+    
     return {
       add,
       camera,
       browsers,
       trash,
       close,
-      takePhoto
+      takePhoto,
+      sendtoVue,
+      clickDebug,
+      
+      
+    
+       
     }
+
+  }/*,
+      methods:{
+      click(){
+        alert("clicked")
+        console.log(sendtoVue.imageSrc)
+         console.log(sendtoVue.x)
+         
+        console.log(this.imageSrc)
+        console.log(imageUrl)
+        console.log(this.takePhoto(imageUrl))
+        console.log(this.takePhoto(imageUrl))
+        console.log(CameraSource)
+        console.log(cameraPhoto.webPath )
+        console.log(takePhoto().cameraPhoto.imageUrl )
+         console.log(takePhoto().imageUrl )
+        
+        const isImage = usePhotoGallery().imageUrl
+        console.log(isImage)
+        const {imageUrl} = usePhotoGallery().imageUrl;
+        
+        console.log(this.imageUrl)
+      
+         console.log("Test Method")
+      
+      //  console.log(cameraPhoto.path)
+    
+
+  console.log(this.takePhoto)
+
+      console.log(this.imageUrl)
+    console.log(image.path)
+      }
+    }*/
   
-  }
 });
 </script>
 
