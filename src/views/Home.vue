@@ -33,7 +33,7 @@
     
       <div id="container">
         <p>ImageSrc: {{imageSrc}} image:  {{image.value}} </p>
-     
+      <img :src='image.value'>
           
         <p>{{zohar}}</p>
           <p>icon?</p>
