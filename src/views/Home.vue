@@ -32,6 +32,10 @@
     
     
       <div id="container">
+        <p>ImageSrc: {{imageSrc}} image:  {{image.value}} </p>
+     
+          
+        <p>{{zohar}}</p>
           <p>icon?</p>
          <ion-icon :name="add" icon="add" :md="add" ></ion-icon>
         <strong>Ready to create an app?</strong>
@@ -53,13 +57,14 @@ import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonFab, IonFabBut
 
 
 
-import { defineComponent } from 'vue';
+import { defineComponent , reactive, ref, watch} from 'vue';
 
 import {add, camera, browsers, trash, close} from "ionicons/icons";
 
 import { usePhotoGallery, sendtoVue, imageSrc } from '@/composables/usePhotoGallery';
 import { CameraSource } from '@capacitor/core';
-console.log(imageSrc)
+
+//console.log(imageSrc)
 
 
 
@@ -79,16 +84,44 @@ export default defineComponent({
     IonGrid, 
     IonRow, 
     IonCol, 
-    IonImg 
+    IonImg,
+    imageSrc
   },
   setup() {
      const { takePhoto} = usePhotoGallery();
 
+   var image = ref(null)
+   image.value = ref(imageSrc)
+     const zohar = ref('maniac')
+//var { image }= sendtoVue()
+
+    watch(imageSrc, ()=>{
+      console.log('watch function')
+      
+    })
+    
+      
+
+
      const clickDebug = ()=>{
+       console.log(image)
+        image.value = ref(imageSrc)
        console.log('click from debug')
        console.log(imageSrc)
+      // console.log(imageSrc.value)
+         console.log(image)
       /* console.log(this.imageSrc(x))*/
+     // console.log(image.value)
+      console.log('from image',image)
+      //console.log('from image.vlaue',image.value)
+      console.log(image)
+      zohar.value = ('hmodi')
+      console.log(zohar)
+      console.log(zohar.value)
+      return image
      }
+
+     
 
      
     
@@ -101,7 +134,9 @@ export default defineComponent({
       takePhoto,
       sendtoVue,
       clickDebug,
-      
+      image,
+      imageSrc,
+      zohar
       
     
        

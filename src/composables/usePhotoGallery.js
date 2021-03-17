@@ -4,7 +4,7 @@ import { Plugins, CameraResultType, CameraSource, CameraPhoto,
 Capacitor, FilesystemDirectory } from "@capacitor/core";
 
 
-var imageSrc ;
+var imageSrc = 'e' ;
 var imageUrl = 'www'
 //const imageSrc = "if u seee this imagesrc is not working"
 
@@ -43,11 +43,9 @@ export function usePhotoGallery() {
    
 
   export function sendtoVue(x){
-   imageSrc = x
-  console.log('from: send to vue'+imageSrc)
- 
-
-  return imageSrc
+   imageSrc = ref(x)
+  console.log('from: send to vue', imageSrc)
+ // return imageSrc
   }
 
 
@@ -56,8 +54,3 @@ export function usePhotoGallery() {
   }
 
 
-  /*
-  var imageLink = imageSrc
-  console.log('imageLink', imageLink)
-*/
-  
