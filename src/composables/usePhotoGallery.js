@@ -4,8 +4,8 @@ import { Plugins, CameraResultType, CameraSource, CameraPhoto,
 Capacitor, FilesystemDirectory } from "@capacitor/core";
 
 
-var imageSrc = 'e' ;
-var imageUrl = 'www'
+var imageSrc = ref('e') ;
+//var imageUrl = 'www'
 //const imageSrc = "if u seee this imagesrc is not working"
 
 export function usePhotoGallery() {
@@ -20,22 +20,15 @@ export function usePhotoGallery() {
  
       });
 
-      
-    
       console.log(cameraPhoto.webPath)
-       var imageUrl = cameraPhoto.webPath 
-       
-        console.log(imageUrl)
-   sendtoVue(imageUrl)
+      var imageUrl = cameraPhoto.webPath 
+      console.log(imageUrl)
+      sendtoVue(imageUrl)
     };
   
     return {
-    
       takePhoto
     };
-
-
-
 
    
   }
@@ -43,9 +36,9 @@ export function usePhotoGallery() {
    
 
   export function sendtoVue(x){
-   imageSrc = ref(x)
-  console.log('from: send to vue', imageSrc)
- // return imageSrc
+    imageSrc.value = ref(x)
+    console.log('from: send to vue', imageSrc)
+ //return ref(imageSrc)
   }
 
 

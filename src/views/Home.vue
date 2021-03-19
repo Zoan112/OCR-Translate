@@ -32,15 +32,15 @@
     
     
       <div id="container">
-        <p>ImageSrc: {{imageSrc}} image:  {{image.value}} </p>
-      <img :src='image.value'>
-          
-        <p>{{zohar}}</p>
-          <p>icon?</p>
+      
+      
+      imageSrc: {{imageSrc.value}}          <p>icon?</p>
          <ion-icon :name="add" icon="add" :md="add" ></ion-icon>
         <strong>Ready to create an app?</strong>
         <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
       </div>
+
+    
     </ion-content>
   </ion-page>
 </template>
@@ -57,7 +57,7 @@ import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonFab, IonFabBut
 
 
 
-import { defineComponent , reactive, ref, watch} from 'vue';
+import { computed, defineComponent , reactive, ref, watch, watchEffect} from 'vue';
 
 import {add, camera, browsers, trash, close} from "ionicons/icons";
 
@@ -89,41 +89,16 @@ export default defineComponent({
   },
   setup() {
      const { takePhoto} = usePhotoGallery();
-
-   var image = ref(null)
-   image.value = ref(imageSrc)
-     const zohar = ref('maniac')
-//var { image }= sendtoVue()
-
-    watch(imageSrc, ()=>{
-      console.log('watch function')
-      
-    })
-    
       
 
+
+  
 
      const clickDebug = ()=>{
-       console.log(image)
-        image.value = ref(imageSrc)
-       console.log('click from debug')
-       console.log(imageSrc)
-      // console.log(imageSrc.value)
-         console.log(image)
-      /* console.log(this.imageSrc(x))*/
-     // console.log(image.value)
-      console.log('from image',image)
-      //console.log('from image.vlaue',image.value)
-      console.log(image)
-      zohar.value = ('hmodi')
-      console.log(zohar)
-      console.log(zohar.value)
-      return image
+   console.log('imageSrc raw:',imageSrc)
+   console.log('imageSrc.value',imageSrc.value)
      }
 
-     
-
-     
     
     return {
       add,
@@ -132,49 +107,14 @@ export default defineComponent({
       trash,
       close,
       takePhoto,
-      sendtoVue,
       clickDebug,
-      image,
-      imageSrc,
-      zohar
-      
+      imageSrc
+     
     
        
     }
 
-  }/*,
-      methods:{
-      click(){
-        alert("clicked")
-        console.log(sendtoVue.imageSrc)
-         console.log(sendtoVue.x)
-         
-        console.log(this.imageSrc)
-        console.log(imageUrl)
-        console.log(this.takePhoto(imageUrl))
-        console.log(this.takePhoto(imageUrl))
-        console.log(CameraSource)
-        console.log(cameraPhoto.webPath )
-        console.log(takePhoto().cameraPhoto.imageUrl )
-         console.log(takePhoto().imageUrl )
-        
-        const isImage = usePhotoGallery().imageUrl
-        console.log(isImage)
-        const {imageUrl} = usePhotoGallery().imageUrl;
-        
-        console.log(this.imageUrl)
-      
-         console.log("Test Method")
-      
-      //  console.log(cameraPhoto.path)
-    
-
-  console.log(this.takePhoto)
-
-      console.log(this.imageUrl)
-    console.log(image.path)
-      }
-    }*/
+  }
   
 });
 </script>
