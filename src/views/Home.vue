@@ -32,9 +32,12 @@
     
     
       <div id="container">
-      
-      
-      imageSrc: {{imageSrc.value}}          <p>icon?</p>
+      <!--imageSrc: {{imageSrc.value}}     -->
+   IMG:<img :src="'data:image/jpeg;base64,'+ base">  
+
+   
+      <img :src='imageSrc.value'>   
+        <p>icon?</p>
          <ion-icon :name="add" icon="add" :md="add" ></ion-icon>
         <strong>Ready to create an app?</strong>
         <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
@@ -61,7 +64,7 @@ import { computed, defineComponent , reactive, ref, watch, watchEffect} from 'vu
 
 import {add, camera, browsers, trash, close} from "ionicons/icons";
 
-import { usePhotoGallery, sendtoVue, imageSrc } from '@/composables/usePhotoGallery';
+import { usePhotoGallery, sendtoVue, imageSrc, base } from '@/composables/usePhotoGallery';
 import { CameraSource } from '@capacitor/core';
 
 //console.log(imageSrc)
@@ -89,17 +92,47 @@ export default defineComponent({
   },
   setup() {
      const { takePhoto} = usePhotoGallery();
+
+
+
+     //Send to vision api//
+
+     const api =function sendToVision(){
+       console.log('start fetch function')
+ var myHeaders = new Headers();
+myHeaders.append("Content-Type", "application/json");
+
+var raw = JSON.stringify({"requests":[{"image":{"content":base.value},"features":[{"type":"LABEL_DETECTION","maxResults":3},{"type":"OBJECT_LOCALIZATION","maxResults":1},{"type":"TEXT_DETECTION","maxResults":1,"model":"builtin/latest"}]}]});
+
+var requestOptions = {
+  method: 'POST',
+  headers: myHeaders,
+  body: raw,
+  redirect: 'follow'
+};
+
+fetch("https://vision.googleapis.com/v1/images:annotate?key=AIzaSyBoy7d6rNyetysP_esKu0CrBHizVFQVAHo\n", requestOptions)
+  .then(response => response.text())
+  .then(result => console.log(result))
+  .catch(error => console.log('error', error));
+     }
       
 
 
-  
+
+    //Debug button///
 
      const clickDebug = ()=>{
    console.log('imageSrc raw:',imageSrc)
    console.log('imageSrc.value',imageSrc.value)
+    console.log('imageSrc.value',imageSrc.value.value)
+    
+    api()
      }
 
-    
+
+//base.value = "'data:image/jpeg;base64,'+ iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=="    
+
     return {
       add,
       camera,
@@ -108,8 +141,8 @@ export default defineComponent({
       close,
       takePhoto,
       clickDebug,
-      imageSrc
-     
+      imageSrc,
+      base,
     
        
     }

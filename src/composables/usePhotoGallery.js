@@ -5,23 +5,31 @@ Capacitor, FilesystemDirectory } from "@capacitor/core";
 
 
 var imageSrc = ref('e') ;
-//var imageUrl = 'www'
-//const imageSrc = "if u seee this imagesrc is not working"
+var base = ref('')
 
 export function usePhotoGallery() {
     const { Camera } = Plugins;
-    const photos = 'www';
+  
 
     const takePhoto = async () => {
       const cameraPhoto = await Camera.getPhoto({
-        resultType: CameraResultType.Uri,
+        resultType: CameraResultType.Base64,
         source: CameraSource.Camera,
         quality: 100,
  
       });
-
       console.log(cameraPhoto.webPath)
+      console.log(cameraPhoto.base64String)
+      console.log(cameraPhoto.exif)
+      console.log(cameraPhoto.path)
+      console.log(cameraPhoto.dataUrl)
+      console.log(cameraPhoto.webPath)
+
+
       var imageUrl = cameraPhoto.webPath 
+      var imageBase = cameraPhoto.base64String
+      sendtoBase(imageBase)
+
       console.log(imageUrl)
       sendtoVue(imageUrl)
     };
@@ -41,9 +49,15 @@ export function usePhotoGallery() {
  //return ref(imageSrc)
   }
 
+  export function sendtoBase(x){
+    base.value = x
+  }
+
+
 
   export{
-     imageSrc 
+     imageSrc,
+     base
   }
 
 
