@@ -36,7 +36,12 @@
    IMG:<img :src="'data:image/jpeg;base64,'+ base">  
 
    
-      <img :src='imageSrc.value'>   
+      IMG2:<img :src='imageSrc.value'>   
+
+RSLT:{{RSLT}}
+
+<button @click="debugApi">Debug API</button>
+
         <p>icon?</p>
          <ion-icon :name="add" icon="add" :md="add" ></ion-icon>
         <strong>Ready to create an app?</strong>
@@ -97,12 +102,12 @@ export default defineComponent({
 
      //Send to vision api//
 
-     const api =function sendToVision(){
+     const api = function sendToVision(){
        console.log('start fetch function')
  var myHeaders = new Headers();
 myHeaders.append("Content-Type", "application/json");
 
-var raw = JSON.stringify({"requests":[{"image":{"content":base.value},"features":[{"type":"LABEL_DETECTION","maxResults":3},{"type":"OBJECT_LOCALIZATION","maxResults":1},{"type":"TEXT_DETECTION","maxResults":1,"model":"builtin/latest"}]}]});
+var raw = JSON.stringify({"requests":[{"image":{"content":base.value},"features":[{"type":"DOCUMENT_TEXT_DETECTION"}]}]});
 
 var requestOptions = {
   method: 'POST',
@@ -113,10 +118,20 @@ var requestOptions = {
 
 fetch("https://vision.googleapis.com/v1/images:annotate?key=AIzaSyBoy7d6rNyetysP_esKu0CrBHizVFQVAHo\n", requestOptions)
   .then(response => response.text())
-  .then(result => console.log(result))
+  .then(result => getVision(result))
   .catch(error => console.log('error', error));
      }
-      
+
+      const RSLT = ref()
+
+      function getVision(x){
+    console.log('this is from x', x)
+    RSLT.value = JSON.parse(x).responses[0].fullTextAnnotation.text
+    console.log(JSON.parse(x).responses[0].fullTextAnnotation.text)
+    }
+
+    
+
 
 
 
@@ -130,6 +145,17 @@ fetch("https://vision.googleapis.com/v1/images:annotate?key=AIzaSyBoy7d6rNyetysP
     api()
      }
 
+     const debugApi = ()=>{
+
+       console.log(RSLT)
+       console.log(RSLT.value)
+       console.log(result)
+       console.log(result.value)
+       
+     }
+
+
+ 
 
 //base.value = "'data:image/jpeg;base64,'+ iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=="    
 
@@ -143,7 +169,8 @@ fetch("https://vision.googleapis.com/v1/images:annotate?key=AIzaSyBoy7d6rNyetysP
       clickDebug,
       imageSrc,
       base,
-    
+      RSLT,
+      debugApi
        
     }
 
