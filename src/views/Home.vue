@@ -32,20 +32,23 @@
     
     
       <div id="container">
-      <!--imageSrc: {{imageSrc.value}}     -->
-   IMG:<img :src="'data:image/jpeg;base64,'+ base">  
+    
+   <img v-if="toogleImg" :src="'data:image/jpeg;base64,'+ base">  
 
+<ion-button @click="clickDebug" v-if="toogleImg" >Process</ion-button>
+  
    
-      IMG2:<img :src='imageSrc.value'>   
+       <br>
+{{RSLT}}
+<br>
+<ion-button @click="clickDebug" v-if="toogleImg" >Translate</ion-button>
 
-RSLT:{{RSLT}}
 
-<button @click="debugApi">Debug API</button>
-
-        <p>icon?</p>
-         <ion-icon :name="add" icon="add" :md="add" ></ion-icon>
-        <strong>Ready to create an app?</strong>
-        <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+        <strong v-if="!toogleImg">Click the  <ion-icon icon="add" :md="add" ></ion-icon> Button to scan document</strong>
+        <br>
+        <button @click="debugShow">DebugShow</button>
+       
+  
       </div>
 
     
@@ -60,7 +63,9 @@ import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonFab, IonFabBut
     IonGrid, 
     IonRow, 
     IonCol, 
-    IonImg } from '@ionic/vue';
+    IonImg, 
+    IonToggle,
+    IonButton} from '@ionic/vue';
 
 
 
@@ -93,7 +98,8 @@ export default defineComponent({
     IonRow, 
     IonCol, 
     IonImg,
-    imageSrc
+    imageSrc,
+    IonButton
   },
   setup() {
      const { takePhoto} = usePhotoGallery();
@@ -132,8 +138,7 @@ fetch("https://vision.googleapis.com/v1/images:annotate?key=AIzaSyBoy7d6rNyetysP
 
     
 
-
-
+  
 
     //Debug button///
 
@@ -154,7 +159,36 @@ fetch("https://vision.googleapis.com/v1/images:annotate?key=AIzaSyBoy7d6rNyetysP
        
      }
 
+      const debugShow = ()=>{
+          console.log(base)
+       console.log(base.value)
+       console.log('from r',r.value)
+       r.value = 'y'
+       toogleImg.value = !toogleImg.value
+       console.log(toogleImg)
+       
+     }
+    ///toogle IMG
 
+   watch(base, ()=>{
+     //alert('watch')
+
+     if (base.value === ''){
+       console.log("from base.value", base.value)
+       //alert(" ''   ")
+       toogleImg.value = false
+     }else if(base.value !== ''){
+       //alert(" not ''")
+       toogleImg.value = true
+     }
+
+   })
+      let toogleImg = ref(false)
+         console.log(toogleImg)
+
+    
+
+const r = ref('x')
  
 
 //base.value = "'data:image/jpeg;base64,'+ iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=="    
@@ -170,7 +204,10 @@ fetch("https://vision.googleapis.com/v1/images:annotate?key=AIzaSyBoy7d6rNyetysP
       imageSrc,
       base,
       RSLT,
-      debugApi
+      debugApi,
+      debugShow,
+      r,
+      toogleImg
        
     }
 
