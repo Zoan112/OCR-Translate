@@ -34,14 +34,14 @@
       <div id="container">
     
    <img v-if="toogleImg" :src="'data:image/jpeg;base64,'+ base">  
-
+<br>
 <ion-button @click="clickDebug" v-if="toogleImg" >Process</ion-button>
   
    
        <br>
 {{RSLT}}
 <br>
-<ion-button @click="clickDebug" v-if="toogleImg" >Translate</ion-button>
+<ion-button @click="translateApi" v-if="toogleImg" >Translate</ion-button>
 
 
         <strong v-if="!toogleImg">Click the  <ion-icon icon="add" :md="add" ></ion-icon> Button to scan document</strong>
@@ -125,7 +125,7 @@ var requestOptions = {
 fetch("https://vision.googleapis.com/v1/images:annotate?key=AIzaSyBoy7d6rNyetysP_esKu0CrBHizVFQVAHo\n", requestOptions)
   .then(response => response.text())
   .then(result => getVision(result))
-  .catch(error => console.log('error', error));
+  .catch(error => console.log('error', error)+alert('No text recognized in image, Please scan again.'));
      }
 
       const RSLT = ref()
@@ -136,10 +136,50 @@ fetch("https://vision.googleapis.com/v1/images:annotate?key=AIzaSyBoy7d6rNyetysP
     console.log(JSON.parse(x).responses[0].fullTextAnnotation.text)
     }
 
+
+
+  watch(base, ()=>{
+     //alert('watch')
+
+     if (base.value === ''){
+       console.log("from base.value", base.value)
+       //alert(" ''   ")
+       toogleImg.value = false
+     }else if(base.value !== ''){
+       //alert(" not ''")
+       toogleImg.value = true
+     }
+
+   })
+      let toogleImg = ref(false)
+         console.log(toogleImg)
+
     
 
-  
+const r = ref('x')
+    
 
+  ///Translate API//
+
+
+  const translateApi = function sendToTranslate(){
+  var myHeaders = new Headers();
+myHeaders.append("Content-Type", "application/json");
+
+var raw = JSON.stringify({"q":RSLT.value,"target":"he","model":"base"});
+
+var requestOptions = {
+  method: 'POST',
+  headers: myHeaders,
+  body: raw,
+  redirect: 'follow'
+};
+
+fetch("https://translation.googleapis.com/language/translate/v2?key=AIzaSyBoy7d6rNyetysP_esKu0CrBHizVFQVAHo\n", requestOptions)
+  .then(response => response.text())
+  .then(result => console.log(result))
+  .catch(error => console.log('error', error));
+  }
     //Debug button///
 
      const clickDebug = ()=>{
@@ -160,35 +200,13 @@ fetch("https://vision.googleapis.com/v1/images:annotate?key=AIzaSyBoy7d6rNyetysP
      }
 
       const debugShow = ()=>{
-          console.log(base)
-       console.log(base.value)
-       console.log('from r',r.value)
-       r.value = 'y'
-       toogleImg.value = !toogleImg.value
-       console.log(toogleImg)
+        console.log(RSLT)
+    
        
      }
     ///toogle IMG
 
-   watch(base, ()=>{
-     //alert('watch')
-
-     if (base.value === ''){
-       console.log("from base.value", base.value)
-       //alert(" ''   ")
-       toogleImg.value = false
-     }else if(base.value !== ''){
-       //alert(" not ''")
-       toogleImg.value = true
-     }
-
-   })
-      let toogleImg = ref(false)
-         console.log(toogleImg)
-
-    
-
-const r = ref('x')
+ 
  
 
 //base.value = "'data:image/jpeg;base64,'+ iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=="    
@@ -207,7 +225,8 @@ const r = ref('x')
       debugApi,
       debugShow,
       r,
-      toogleImg
+      toogleImg,
+      translateApi
        
     }
 
