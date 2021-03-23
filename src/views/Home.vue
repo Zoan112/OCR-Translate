@@ -42,6 +42,8 @@
 {{RSLT}}
 <br>
 <ion-button @click="translateApi" v-if="toogleImg" >Translate</ion-button>
+<br>
+{{translatedText}}
 
 
         <strong v-if="!toogleImg">Click the  <ion-icon icon="add" :md="add" ></ion-icon> Button to scan document</strong>
@@ -129,6 +131,7 @@ fetch("https://vision.googleapis.com/v1/images:annotate?key=AIzaSyBoy7d6rNyetysP
      }
 
       const RSLT = ref()
+      const translatedText = ref()
 
       function getVision(x){
     console.log('this is from x', x)
@@ -177,9 +180,21 @@ var requestOptions = {
 
 fetch("https://translation.googleapis.com/language/translate/v2?key=AIzaSyBoy7d6rNyetysP_esKu0CrBHizVFQVAHo\n", requestOptions)
   .then(response => response.text())
-  .then(result => console.log(result))
+  .then(result => console.log(result)+ showTranslate(result))
   .catch(error => console.log('error', error));
+
   }
+
+        function showTranslate(resultTranslate){
+    translatedText.value = JSON.parse(resultTranslate).data.translations[0].translatedText
+    }
+
+
+
+
+
+
+
     //Debug button///
 
      const clickDebug = ()=>{
@@ -226,7 +241,8 @@ fetch("https://translation.googleapis.com/language/translate/v2?key=AIzaSyBoy7d6
       debugShow,
       r,
       toogleImg,
-      translateApi
+      translateApi,
+      translatedText
        
     }
 
