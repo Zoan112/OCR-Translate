@@ -29,6 +29,23 @@ import '@ionic/vue/css/display.css';
 /* Theme variables */
 import './theme/variables.css';
 
+/* Firebase Import*/
+import firebase from "firebase/app"
+import 'firebase/functions' 
+
+firebase.initializeApp({
+    apiKey: "AIzaSyAraqP78ELsXF2ckhG0WfeJd0DUT_aI9pg",
+    authDomain: "fir-functions-8307b.firebaseapp.com",
+    projectId: "fir-functions-8307b",
+    storageBucket: "fir-functions-8307b.appspot.com",
+    messagingSenderId: "326340236602",
+    appId: "1:326340236602:web:dc85ff32bcadc31d36ac03"
+})
+
+
+  
+
+
 const app = createApp(App)
   .use(IonicVue)
   .use(router);
@@ -36,3 +53,8 @@ const app = createApp(App)
 router.isReady().then(() => {
   app.mount('#app');
 });
+
+const googleFunc = firebase.functions()
+
+export default googleFunc 
+console.log('from main',googleFunc)

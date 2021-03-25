@@ -32,15 +32,14 @@
     
     
       <div id="container">
-    
-   <img v-if="toogleImg" :src="'data:image/jpeg;base64,'+ base">  
-<br>
-<ion-button @click="clickDebug" v-if="toogleImg" >Process</ion-button>
-  
-   
+
+        <ion-button  @click="tryFunc" >Try function</ion-button>
+     <img v-if="toogleImg" :src="'data:image/jpeg;base64,'+ base">  
+    <br>
+     <ion-button @click="clickDebug" v-if="toogleImg" >Process</ion-button>
        <br>
-{{RSLT}}
-<br>
+      {{RSLT}}
+      <br>
 <ion-button @click="translateApi" v-if="toogleImg" >Translate</ion-button>
 <br>
 {{translatedText}}
@@ -78,8 +77,9 @@ import {add, camera, browsers, trash, close} from "ionicons/icons";
 
 import { usePhotoGallery, sendtoVue, imageSrc, base } from '@/composables/usePhotoGallery';
 import { CameraSource } from '@capacitor/core';
+ 
+import googleFunc from '../main.js'
 
-//console.log(imageSrc)
 
 
 
@@ -107,7 +107,17 @@ export default defineComponent({
      const { takePhoto} = usePhotoGallery();
 
 
+     const tryFunc = ()=>{
+       console.log(googleFunc)
+       console.log('try Func')
 
+const sayHello = googleFunc.httpsCallable('sayHello');
+    sayHello({ name: 'Shoun'}).then(result => {
+        console.log(result.data);
+        console.log(result.data.name);
+    });
+  
+     }
      //Send to vision api//
 
      const api = function sendToVision(){
@@ -242,7 +252,8 @@ fetch("https://translation.googleapis.com/language/translate/v2?key=AIzaSyBoy7d6
       r,
       toogleImg,
       translateApi,
-      translatedText
+      translatedText,
+      tryFunc
        
     }
 
