@@ -16,39 +16,37 @@
       </ion-header>
 
 
-      <!-- Add button  -->
+      <!-- FAB Add button  -->
 
-         <ion-fab edge vertical="top" horizontal="end" slot="fixed">
+    <ion-fab edge vertical="top" horizontal="end" slot="fixed">
+
       <ion-fab-button>
         <ion-icon :name="add" :icon="add" :md="add"></ion-icon>
       </ion-fab-button>
 
         <ion-fab-list side="bottom">
         <ion-fab-button @click="takePhoto()"><ion-icon :icon="camera" :md="camera"></ion-icon></ion-fab-button>
-        <ion-fab-button @click="clickDebug"><ion-icon :icon="browsers" :md="browsers"></ion-icon></ion-fab-button>
       </ion-fab-list>
   
     </ion-fab>
     
-    
+    <!--  Container -->
       <div id="container">
-
         <ion-button  @click="tryFunc" >Try function</ion-button>
+    <!--Image-->
      <img v-if="toogleImg" :src="'data:image/jpeg;base64,'+ base">  
-    <br>
-     <ion-button @click="clickDebug" v-if="toogleImg" >Process</ion-button>
+         <br>
+     <ion-button @click="processImgBtn" v-if="toogleImg" >Process</ion-button>
        <br>
       {{RSLT}}
       <br>
-<ion-button @click="translateApi" v-if="toogleImg" >Translate</ion-button>
-<br>
-{{translatedText}}
+      <ion-button @click="translateApi" v-if="toogleImg" >Translate</ion-button>
+      <br>
+      {{translatedText}}
 
-
+          <!--Placeholder before image is taken -->
         <strong v-if="!toogleImg">Click the  <ion-icon icon="add" :md="add" ></ion-icon> Button to scan document</strong>
         <br>
-        <button @click="debugShow">DebugShow</button>
-       
   
       </div>
 
@@ -73,7 +71,7 @@ import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonFab, IonFabBut
 
 import { computed, defineComponent , reactive, ref, watch, watchEffect} from 'vue';
 
-import {add, camera, browsers, trash, close} from "ionicons/icons";
+import {add, camera, trash, close} from "ionicons/icons";
 
 import { usePhotoGallery, sendtoVue, imageSrc, base } from '@/composables/usePhotoGallery';
 import { CameraSource } from '@capacitor/core';
@@ -104,6 +102,7 @@ export default defineComponent({
     IonButton
   },
   setup() {
+    // TakePhoto
      const { takePhoto} = usePhotoGallery();
 
 
@@ -149,28 +148,19 @@ fetch("https://vision.googleapis.com/v1/images:annotate?key=AIzaSyBoy7d6rNyetysP
     console.log(JSON.parse(x).responses[0].fullTextAnnotation.text)
     }
 
-
+/* Conditional element rendering*/ 
+let toogleImg = ref(false)
 
   watch(base, ()=>{
-     //alert('watch')
-
      if (base.value === ''){
        console.log("from base.value", base.value)
-       //alert(" ''   ")
        toogleImg.value = false
      }else if(base.value !== ''){
-       //alert(" not ''")
        toogleImg.value = true
      }
 
    })
-      let toogleImg = ref(false)
-         console.log(toogleImg)
-
-    
-
-const r = ref('x')
-    
+      
 
   ///Translate API//
 
@@ -205,15 +195,11 @@ fetch("https://translation.googleapis.com/language/translate/v2?key=AIzaSyBoy7d6
 
 
 
-    //Debug button///
 
-     const clickDebug = ()=>{
-   console.log('imageSrc raw:',imageSrc)
-   console.log('imageSrc.value',imageSrc.value)
-    console.log('imageSrc.value',imageSrc.value.value)
-    
+     const processImgBtn = ()=>{ 
     api()
      }
+
 
      const debugApi = ()=>{
 
@@ -239,21 +225,19 @@ fetch("https://translation.googleapis.com/language/translate/v2?key=AIzaSyBoy7d6
     return {
       add,
       camera,
-      browsers,
       trash,
       close,
       takePhoto,
-      clickDebug,
       imageSrc,
       base,
       RSLT,
       debugApi,
       debugShow,
-      r,
       toogleImg,
       translateApi,
       translatedText,
-      tryFunc
+      tryFunc,
+      processImgBtn
        
     }
 
