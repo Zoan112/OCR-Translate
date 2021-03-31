@@ -107,10 +107,10 @@ export default defineComponent({
     // TakePhoto
      const { takePhoto} = usePhotoGallery();
 
-
+    //Send base Img to google functions
      const processOcr = ()=>{
 
- googleFunc.useEmulator("localhost", 5001);
+// googleFunc.useEmulator("localhost", 5001);
 var baseFire = base.value
 
 console.log ('basefire', baseFire)
@@ -124,7 +124,7 @@ const sendToOcr = googleFunc.httpsCallable('sendToOcr1');
   
      }
 
-
+ //Send text reasults to google functions
      const processTranslate = ()=>{
        const RSLTFire = RSLT.value
       const sendToTranslate = googleFunc.httpsCallable('processTranlate')
@@ -238,12 +238,6 @@ fetch("https://translation.googleapis.com/language/translate/v2?key=AIzaSyBoy7d6
     
        
      }
-    ///toogle IMG
-
- 
- 
-
-//base.value = "'data:image/jpeg;base64,'+ iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=="    
 
     return {
       add,
