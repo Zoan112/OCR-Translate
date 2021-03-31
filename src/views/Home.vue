@@ -32,7 +32,9 @@
     
     <!--  Container -->
       <div id="container">
-        <ion-button  @click="tryFunc" >Try function</ion-button>
+        <ion-button @click="processOcr" v-if="toogleImg" >Process OCR</ion-button>
+
+        <ion-button @click="processTranslate">Process Translate</ion-button>
     <!--Image-->
      <img v-if="toogleImg" :src="'data:image/jpeg;base64,'+ base">  
          <br>
@@ -106,7 +108,7 @@ export default defineComponent({
      const { takePhoto} = usePhotoGallery();
 
 
-     const tryFunc = ()=>{
+     const processOcr = ()=>{
 
  googleFunc.useEmulator("localhost", 5001);
 var baseFire = base.value
@@ -120,6 +122,20 @@ const sendToOcr = googleFunc.httpsCallable('sendToOcr1');
         RSLT.value = parseOcr
     });
   
+     }
+
+
+     const processTranslate = ()=>{
+       const RSLTFire = RSLT.value
+      const sendToTranslate = googleFunc.httpsCallable('processTranlate')
+
+sendToTranslate({ RSLTFire }).then(result => {
+  console.log(result)
+  console.log(result.data)
+  
+  translatedText.value = JSON.parse(result.data)
+})
+
      }
 
 
@@ -243,7 +259,8 @@ fetch("https://translation.googleapis.com/language/translate/v2?key=AIzaSyBoy7d6
       toogleImg,
       translateApi,
       translatedText,
-      tryFunc,
+      processOcr,
+      processTranslate,
       processImgBtn
        
     }
