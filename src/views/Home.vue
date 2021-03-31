@@ -40,7 +40,7 @@
        <br>
       {{RSLT}}
       <br>
-      <ion-button @click="processTranslate" v-if="toogleImg" >Translate</ion-button>
+      <ion-button @click="processTranslate" v-if="showTranslateBtn" >Translate</ion-button>
       <br>
       {{translatedText}}
 
@@ -153,6 +153,18 @@ let toogleImg = ref(false)
      }
 
    })
+  
+  const showTranslateBtn = ref(false)
+
+  watch(RSLT, ()=>{
+     if (RSLT.value === ''){
+       console.log("from RSLT.value", RSLT.value )
+       showTranslateBtn.value = false
+     }else if(base.value !== ''){
+       showTranslateBtn.value = true
+     }
+
+   })
       
 
 
@@ -197,7 +209,8 @@ let toogleImg = ref(false)
       translatedText,
       processOcr,
       processTranslate,
-      processImgBtn
+      processImgBtn,
+      showTranslateBtn
        
     }
 
