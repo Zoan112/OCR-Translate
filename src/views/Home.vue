@@ -115,8 +115,9 @@ console.log ('basefire', baseFire)
 const sendToOcr = googleFunc.httpsCallable('sendToOcr1');
     sendToOcr({ baseFire }).then(result => {
         console.log(result);
-         console.log(result.data);
-         console.log(result.data[0]);
+      console.log(result.data);
+       const parseOcr = JSON.parse(result.data)
+        RSLT.value = parseOcr
     });
   
      }

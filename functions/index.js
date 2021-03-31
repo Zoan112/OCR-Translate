@@ -21,9 +21,11 @@ exports.sendToOcr1 = functions.https.onCall( (data, context)=> {
     
     axios(config)
     .then((response) => {
-      console.log(JSON.stringify(response.data))
-      const w = JSON.stringify(response.data.responses[0].fullTextAnnotation.text)
-      console.log('from W', w)
+      //console.log(JSON.stringify(response.data))
+
+   
+     const w = JSON.stringify(response.data.responses[0].fullTextAnnotation.text)
+     // console.log('from W', w)
       resolve (w)
     })
     .catch((error) => {
