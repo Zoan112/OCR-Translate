@@ -32,17 +32,15 @@
     
     <!--  Container -->
       <div id="container">
-        <ion-button @click="processOcr" v-if="toogleImg" >Process OCR</ion-button>
-
-        <ion-button @click="processTranslate">Process Translate</ion-button>
+      
     <!--Image-->
      <img v-if="toogleImg" :src="'data:image/jpeg;base64,'+ base">  
          <br>
-     <ion-button @click="processImgBtn" v-if="toogleImg" >Process</ion-button>
+     <ion-button @click="processOcr" v-if="toogleImg" >Process</ion-button>
        <br>
       {{RSLT}}
       <br>
-      <ion-button @click="translateApi" v-if="toogleImg" >Translate</ion-button>
+      <ion-button @click="processTranslate" v-if="toogleImg" >Translate</ion-button>
       <br>
       {{translatedText}}
 
@@ -139,38 +137,10 @@ sendToTranslate({ RSLTFire }).then(result => {
      }
 
 
-
-     //Send to vision api//
-
-     const api = function sendToVision(){
-       console.log('start fetch function')
- var myHeaders = new Headers();
-myHeaders.append("Content-Type", "application/json");
-
-var raw = JSON.stringify({"requests":[{"image":{"content":base.value},"features":[{"type":"DOCUMENT_TEXT_DETECTION"}]}]});
-
-var requestOptions = {
-  method: 'POST',
-  headers: myHeaders,
-  body: raw,
-  redirect: 'follow'
-};
-
-fetch("https://vision.googleapis.com/v1/images:annotate?key=AIzaSyBoy7d6rNyetysP_esKu0CrBHizVFQVAHo\n", requestOptions)
-  .then(response => response.text())
-  .then(result => getVision(result))
-  .catch(error => console.log('error', error)+alert('No text recognized in image, Please scan again.'));
-     }
-
       const RSLT = ref()
       const translatedText = ref()
 
-      function getVision(x){
-    console.log('this is from x', x)
-    RSLT.value = JSON.parse(x).responses[0].fullTextAnnotation.text
-    console.log(JSON.parse(x).responses[0].fullTextAnnotation.text)
-    }
-
+  
 /* Conditional element rendering*/ 
 let toogleImg = ref(false)
 
@@ -184,33 +154,6 @@ let toogleImg = ref(false)
 
    })
       
-
-  ///Translate API//
-
-
-  const translateApi = function sendToTranslate(){
-  var myHeaders = new Headers();
-myHeaders.append("Content-Type", "application/json");
-
-var raw = JSON.stringify({"q":RSLT.value,"target":"he","model":"base"});
-
-var requestOptions = {
-  method: 'POST',
-  headers: myHeaders,
-  body: raw,
-  redirect: 'follow'
-};
-
-fetch("https://translation.googleapis.com/language/translate/v2?key=AIzaSyBoy7d6rNyetysP_esKu0CrBHizVFQVAHo\n", requestOptions)
-  .then(response => response.text())
-  .then(result => console.log(result)+ showTranslate(result))
-  .catch(error => console.log('error', error));
-
-  }
-
-        function showTranslate(resultTranslate){
-    translatedText.value = JSON.parse(resultTranslate).data.translations[0].translatedText
-    }
 
 
 
@@ -251,7 +194,6 @@ fetch("https://translation.googleapis.com/language/translate/v2?key=AIzaSyBoy7d6
       debugApi,
       debugShow,
       toogleImg,
-      translateApi,
       translatedText,
       processOcr,
       processTranslate,
