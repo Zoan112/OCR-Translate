@@ -107,16 +107,22 @@ export default defineComponent({
 
 
      const tryFunc = ()=>{
-       console.log(googleFunc)
-       console.log('try Func')
 
-const sayHello = googleFunc.httpsCallable('sayHello');
-    sayHello({ name: 'Shoun'}).then(result => {
-        console.log(result.data);
-        console.log(result.data.name);
+ googleFunc.useEmulator("localhost", 5001);
+var baseFire = base.value
+
+console.log ('basefire', baseFire)
+const sendToOcr = googleFunc.httpsCallable('sendToOcr1');
+    sendToOcr({ baseFire }).then(result => {
+        console.log(result);
+         console.log(result.data);
+         console.log(result.data[0]);
     });
   
      }
+
+
+
      //Send to vision api//
 
      const api = function sendToVision(){
