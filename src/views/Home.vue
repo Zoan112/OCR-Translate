@@ -39,16 +39,30 @@
 
     <ion-card-content>  
 
-   <ion-textarea background="secondary" v-model="RSLT" auto-grow></ion-textarea>
+   <ion-textarea v-if="showTranslateBtn" v-model="RSLT" auto-grow></ion-textarea>
     </ion-card-content>
 
-  <ion-button @click="processTranslate" v-if="showTranslateBtn" >Translate</ion-button>
-   <ion-button @click="addToClipboard" ><ion-icon name="copy" size="large" :icon="copy" :md="copy"></ion-icon></ion-button>
+
+<ion-grid>
+  <ion-row class="ion-no-padding">
+    <ion-col>
+    </ion-col>
+
+    <ion-col>
+            <ion-button @click="processTranslate" v-if="showTranslateBtn" >Translate</ion-button>
+    </ion-col>
+
+    <ion-col>
+             <ion-button @click="addToClipboard"  v-if="showAfterTranslate"  ><ion-icon name="copy" size="large" :icon="copy" :md="copy"></ion-icon></ion-button>
+    </ion-col>
+
+        
+  </ion-row>
+</ion-grid>
+
 
       <ion-card-content>
-        
-        <ion-textarea v-model="translatedText" auto-grow></ion-textarea>
-        
+        <ion-textarea v-if="showAfterTranslate" v-model="translatedText" auto-grow></ion-textarea>    
       </ion-card-content>
 
       
@@ -177,15 +191,21 @@ let toogleImg = ref(false)
 
   watch(RSLT, ()=>{
      if (RSLT.value === ''){
-       console.log("from RSLT.value", RSLT.value )
+       console.log("from RSLT.value = '' ", RSLT.value )
        showTranslateBtn.value = false
-     }else if(base.value !== ''){
+     }else if(RSLT.value !== ''){
        showTranslateBtn.value = true
      }
 
    })
 
+const showAfterTranslate = ref(false)
 
+watch(translatedText ,()=>{
+if (translatedText.value !== ''){
+  showAfterTranslate.value = true
+}
+} )
 
 
 //getInputElement() => Promise<IonTextarea>
@@ -228,7 +248,8 @@ let toogleImg = ref(false)
       processOcr,
       processTranslate,
       showTranslateBtn,
-      addToClipboard
+      addToClipboard,
+      showAfterTranslate
        
     }
 
