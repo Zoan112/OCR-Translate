@@ -39,15 +39,16 @@
 
     <ion-card-content>  
 
-   <ion-textarea v-model="RSLT" auto-grow></ion-textarea>
+   <ion-textarea background="secondary" v-model="RSLT" auto-grow></ion-textarea>
     </ion-card-content>
 
   <ion-button @click="processTranslate" v-if="showTranslateBtn" >Translate</ion-button>
+   <ion-button @click="addToClipboard" ><ion-icon name="copy" size="large" :icon="copy" :md="copy"></ion-icon></ion-button>
+
       <ion-card-content>
         
-        <ion-textarea class="transRslt" type="text" v-model="translatedText" auto-grow></ion-textarea>
+        <ion-textarea v-model="translatedText" auto-grow></ion-textarea>
         
-        <ion-icon @click="addToClipboard" name="copy" size="large" :icon="copy" :md="copy"></ion-icon>
       </ion-card-content>
 
       
@@ -77,7 +78,9 @@ import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonFab, IonFabBut
     IonCard,
     IonCardContent,
     IonTextarea,
-    IonButton} from '@ionic/vue';
+    IonButton,
+    toastController,
+    IonToast} from '@ionic/vue';
 
 
 
@@ -182,25 +185,34 @@ let toogleImg = ref(false)
 
    })
 
+
+
+
 //getInputElement() => Promise<IonTextarea>
 
    const addToClipboard = (()=>{
      console.log(translatedText.value)
     
-
     navigator.clipboard.writeText(translatedText.value)
-    alert('copied to clipboard')
-     // let copyString = document.querySelector('#transRslt')
-     // copyString.select()
-      const string = String(translatedText.value)
   
-      console.log(string)
+  handleButtonClick()
+       async function handleButtonClick() {
+      const toast = await toastController.create({
+        color: 'dark',
+        duration: 2000,
+        message: 'Copied to clipboard',
+        showCloseButton: true
+      });
+
+      await toast.present();
+    }
+
      // translatedText.value.select()
        
       //document.execCommand('copy');
    })
       
-
+ 
     return {
       add,
       copy,
@@ -252,5 +264,11 @@ let toogleImg = ref(false)
 
 #container a {
   text-decoration: none;
+}
+
+
+ion-textarea{
+  background:#f0f8ff;
+  border-radius: 10px
 }
 </style>
