@@ -32,21 +32,32 @@
     
     <!--  Container -->
       <div id="container">
-      
-    <!--Image-->
-     <img v-if="toogleImg" :src="'data:image/jpeg;base64,'+ base">  
-         <br>
-     <ion-button @click="processOcr" v-if="toogleImg" >Process</ion-button>
-       <br>
-      {{RSLT}}
-      <br>
-      <ion-button @click="processTranslate" v-if="showTranslateBtn" >Translate</ion-button>
-      <br>
-      {{translatedText}}
+      <ion-card>
+          <img v-if="toogleImg" :src="'data:image/jpeg;base64,'+ base">
+          <br>
+            <ion-button @click="processOcr" v-if="toogleImg" >Process</ion-button> 
 
-          <!--Placeholder before image is taken -->
-        <strong v-if="!toogleImg">Click the  <ion-icon icon="add" :md="add" ></ion-icon> Button to scan document</strong>
-        <br>
+    <ion-card-content>  
+
+   <ion-textarea v-model="RSLT" auto-grow></ion-textarea>
+    </ion-card-content>
+
+  <ion-button @click="processTranslate" v-if="showTranslateBtn" >Translate</ion-button>
+      <ion-card-content>
+        
+        <ion-textarea class="transRslt" type="text" v-model="translatedText" auto-grow></ion-textarea>
+        
+        <ion-icon @click="addToClipboard" name="copy" size="large" :icon="copy" :md="copy"></ion-icon>
+      </ion-card-content>
+
+      
+    <strong v-if="!toogleImg">Click the  <ion-icon icon="add" :md="add" ></ion-icon> Button to scan document</strong>
+      </ion-card>
+
+
+   
+        
+      
   
       </div>
 
@@ -63,7 +74,9 @@ import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonFab, IonFabBut
     IonRow, 
     IonCol, 
     IonImg, 
-    IonToggle,
+    IonCard,
+    IonCardContent,
+    IonTextarea,
     IonButton} from '@ionic/vue';
 
 
@@ -71,7 +84,7 @@ import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonFab, IonFabBut
 
 import { computed, defineComponent , reactive, ref, watch, watchEffect} from 'vue';
 
-import {add, camera, trash, close} from "ionicons/icons";
+import {add, camera, trash, close, copy} from "ionicons/icons";
 
 import { usePhotoGallery, sendtoVue, imageSrc, base } from '@/composables/usePhotoGallery';
 import { CameraSource } from '@capacitor/core';
@@ -99,7 +112,10 @@ export default defineComponent({
     IonCol, 
     IonImg,
     imageSrc,
-    IonButton
+    IonButton,
+    IonCard,
+    IonCardContent,
+    IonTextarea
   },
   setup() {
     // TakePhoto
@@ -165,37 +181,29 @@ let toogleImg = ref(false)
      }
 
    })
-      
 
+//getInputElement() => Promise<IonTextarea>
 
-
-
-
-
-
-
-     const processImgBtn = ()=>{ 
-    api()
-     }
-
-
-     const debugApi = ()=>{
-
-       console.log(RSLT)
-       console.log(RSLT.value)
-       console.log(result)
-       console.log(result.value)
-       
-     }
-
-      const debugShow = ()=>{
-        console.log(RSLT)
+   const addToClipboard = (()=>{
+     console.log(translatedText.value)
     
+
+    navigator.clipboard.writeText(translatedText.value)
+    alert('copied to clipboard')
+     // let copyString = document.querySelector('#transRslt')
+     // copyString.select()
+      const string = String(translatedText.value)
+  
+      console.log(string)
+     // translatedText.value.select()
        
-     }
+      //document.execCommand('copy');
+   })
+      
 
     return {
       add,
+      copy,
       camera,
       trash,
       close,
@@ -203,14 +211,12 @@ let toogleImg = ref(false)
       imageSrc,
       base,
       RSLT,
-      debugApi,
-      debugShow,
       toogleImg,
       translatedText,
       processOcr,
       processTranslate,
-      processImgBtn,
-      showTranslateBtn
+      showTranslateBtn,
+      addToClipboard
        
     }
 
