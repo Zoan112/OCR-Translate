@@ -40,9 +40,48 @@ exports.sendToOcr1 = functions.https.onCall( (data, context)=> {
 exports.processTranlate = functions.https.onCall((data, context)=>{
     return new Promise ((resolve, reject)=>{
       console.log(data)
+      
 
       
       let content = JSON.stringify({"q":data.RSLTFire,"target":"he","model":"base"});
+      
+      let config = {
+        method: 'post',
+        url: 'https://translation.googleapis.com/language/translate/v2?key=AIzaSyBoy7d6rNyetysP_esKu0CrBHizVFQVAHo\n',
+        headers: { 
+          'Content-Type': 'application/json'
+        },
+        data : content
+      };
+      
+      axios(config)
+      .then((response) => {
+        console.log(JSON.stringify(response.data))
+        console.log(JSON.stringify(response.data.data.translations[0].translatedText))
+          
+        const result = JSON.stringify(response.data.data.translations[0].translatedText)
+        resolve (result)
+        ;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    
+    })
+
+}) 
+
+
+exports.processTranlateLang = functions.https.onCall((data, context)=>{
+  console.log(data)
+    console.log(data.lang)
+    console.log(data.RSLTFire)
+    return new Promise ((resolve, reject)=>{
+      console.log(data)
+      
+
+      
+      let content = JSON.stringify({"q":data.RSLTFire,"target":data.lang,"model":"base"});
       
       let config = {
         method: 'post',

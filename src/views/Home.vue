@@ -31,7 +31,7 @@
     </ion-fab>
            
       <ion-button @click="openPicker()" fill="outline">Translate into: {{translatedLang}}</ion-button>
-  
+  <ion-button @click="debug">Click debug</ion-button>
 
     <!--  Container -->
       <div id="container">
@@ -165,18 +165,43 @@ const sendToOcr = googleFunc.httpsCallable('sendToOcr1');
 
  //Send text reasults to google functions
      const processTranslate = ()=>{
+       googleFunc.useEmulator("localhost", 5001);
        const RSLTFire = RSLT.value
-      const sendToTranslate = googleFunc.httpsCallable('processTranlate')
 
-sendToTranslate({ RSLTFire }).then(result => {
+       
+     
+        const selctedlang = translatedLang.value;
+      console.log(langCode[0][selctedlang])
+        const lang = langCode[0][selctedlang]
+      console.log('from lang:',lang)
+
+
+      const sendToTranslate = googleFunc.httpsCallable('processTranlateLang')
+
+sendToTranslate({lang,RSLTFire}).then(result => {
   console.log(result)
   console.log(result.data)
   
   translatedText.value = JSON.parse(result.data)
 })
-
      }
 
+      const translatedLang = ref('Hebrew')
+      
+     const langCode = [{"Hebrew":"he", "Spanish": "es", 'Russian': "ru"}]
+
+    const debug = ()=>{
+      console.log('debug')
+        console.log(langCode)
+        
+      console.log(langCode[0].hebrew)
+        const lang = translatedLang.value;
+      console.log(langCode[0][lang])
+      console.log(translatedLang.value)
+      console.log(lang)
+    }
+
+ 
 
       const RSLT = ref()
       const translatedText = ref()
@@ -242,8 +267,7 @@ if (translatedText.value !== ''){
       //document.execCommand('copy');
    })
      
-      const translatedLang = ref('Hebrew')
-      
+    
      ////PICKER
      
       const defaultColumnOptions = [
@@ -316,7 +340,8 @@ async function openPicker(numColumns = 1, numOptions = 3, columnOptions = defaul
       addToClipboard,
       showAfterTranslate,
       openPicker,
-      translatedLang
+      translatedLang,
+      debug
        
     }
 
