@@ -29,10 +29,15 @@
       </ion-fab-list>
   
     </ion-fab>
-    
+            <!-- <ion-content>
+      <ion-button @click="openPicker()">SHOW PICKER</ion-button>
+    </ion-content>-->
+
     <!--  Container -->
       <div id="container">
+ 
       <ion-card>
+        
           <img v-if="toogleImg" :src="'data:image/jpeg;base64,'+ base">
           <br>
             <ion-button @click="processOcr" v-if="toogleImg" >Process</ion-button> 
@@ -53,7 +58,7 @@
     </ion-col>
 
     <ion-col>
-             <ion-button @click="addToClipboard"  v-if="showAfterTranslate"  ><ion-icon name="copy" size="large" :icon="copy" :md="copy"></ion-icon></ion-button>
+             <ion-button @click="addToClipboard" fill="outline" v-if="showAfterTranslate"><ion-icon color="#3171e0" name="copy" size="large" :icon="copy" :md="copy"></ion-icon></ion-button>
     </ion-col>
 
         
@@ -94,7 +99,9 @@ import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonFab, IonFabBut
     IonTextarea,
     IonButton,
     toastController,
-    IonToast} from '@ionic/vue';
+    IonToast,
+    IonDatetime,
+    pickerController} from '@ionic/vue';
 
 
 
@@ -135,6 +142,7 @@ export default defineComponent({
     IonTextarea
   },
   setup() {
+
     // TakePhoto
      const { takePhoto} = usePhotoGallery();
 
@@ -208,6 +216,8 @@ if (translatedText.value !== ''){
 } )
 
 
+
+//Add translated text to clipboard
 //getInputElement() => Promise<IonTextarea>
 
    const addToClipboard = (()=>{
@@ -231,8 +241,59 @@ if (translatedText.value !== ''){
        
       //document.execCommand('copy');
    })
-      
- 
+     
+     /*
+      const defaultColumnOptions = [
+      [
+        'Hebrew',
+        'Spanish',
+        'Russian',
+      ]
+    ]
+async function openPicker(numColumns = 1, numOptions = 3, columnOptions = defaultColumnOptions){
+      const picker = await pickerController.create({
+        columns: getColumns(numColumns, numOptions, columnOptions),
+        buttons: [
+          {
+            text: 'Cancel',
+            role: 'cancel'
+          },
+          {
+            text: 'Confirm',
+            handler: (value) => {
+              console.log(`Got Value ${value}`)+alert(JSON.stringify(value));
+            }
+          }
+        ]
+      });
+
+      await picker.present();
+    }
+
+    function getColumns(numColumns, numOptions, columnOptions) {
+      let columns = [];
+      for (let i = 0; i < numColumns; i++) {
+        columns.push({
+          name: `col-${i}`,
+          options: getColumnOptions(i, numOptions, columnOptions)
+        });
+      }
+
+      return columns;
+    }
+
+    function getColumnOptions(columnIndex, numOptions, columnOptions) {
+      let options = [];
+      for (let i = 0; i < numOptions; i++) {
+        options.push({
+          text: columnOptions[columnIndex][i % numOptions],
+          value: i
+        })
+      }
+
+      return options;
+    }
+    */
     return {
       add,
       copy,
@@ -249,7 +310,8 @@ if (translatedText.value !== ''){
       processTranslate,
       showTranslateBtn,
       addToClipboard,
-      showAfterTranslate
+      showAfterTranslate,
+      //openPicker
        
     }
 
@@ -291,5 +353,10 @@ if (translatedText.value !== ''){
 ion-textarea{
   background:#f0f8ff;
   border-radius: 10px
+}
+
+ion-card{
+  max-height: 100vh;
+  overflow: auto;
 }
 </style>
