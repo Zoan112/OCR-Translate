@@ -35,8 +35,8 @@
 
     <!--  Container -->
       <div id="container">
- 
-      <ion-card>
+             <strong v-if="!toogleImg">Click the  <ion-icon icon="add" :md="add" ></ion-icon> Button to scan document</strong>
+      <ion-card v-if="toogleImg">
         
           <img v-if="toogleImg" :src="'data:image/jpeg;base64,'+ base">
           <br>
@@ -71,7 +71,7 @@
       </ion-card-content>
 
       
-    <strong v-if="!toogleImg">Click the  <ion-icon icon="add" :md="add" ></ion-icon> Button to scan document</strong>
+ 
       </ion-card>
 
 
