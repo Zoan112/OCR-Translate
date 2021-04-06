@@ -29,9 +29,9 @@
       </ion-fab-list>
   
     </ion-fab>
-            <!-- <ion-content>
-      <ion-button @click="openPicker()">SHOW PICKER</ion-button>
-    </ion-content>-->
+           
+      <ion-button @click="openPicker()" fill="outline">Translate into: {{translatedLang}}</ion-button>
+  
 
     <!--  Container -->
       <div id="container">
@@ -51,13 +51,13 @@
 <ion-grid>
   <ion-row class="ion-no-padding">
     <ion-col>
+            <ion-button @click="openPicker()" v-if="showTranslateBtn" fill="outline">Translate into: {{translatedLang}}</ion-button>
     </ion-col>
-
     <ion-col>
             <ion-button @click="processTranslate" v-if="showTranslateBtn" >Translate</ion-button>
     </ion-col>
 
-    <ion-col>
+    <ion-col v-if="showAfterTranslate">
              <ion-button @click="addToClipboard" fill="outline" v-if="showAfterTranslate"><ion-icon color="#3171e0" name="copy" size="large" :icon="copy" :md="copy"></ion-icon></ion-button>
     </ion-col>
 
@@ -242,7 +242,10 @@ if (translatedText.value !== ''){
       //document.execCommand('copy');
    })
      
-     /*
+      const translatedLang = ref('Hebrew')
+      
+     ////PICKER
+     
       const defaultColumnOptions = [
       [
         'Hebrew',
@@ -261,7 +264,8 @@ async function openPicker(numColumns = 1, numOptions = 3, columnOptions = defaul
           {
             text: 'Confirm',
             handler: (value) => {
-              console.log(`Got Value ${value}`)+alert(JSON.stringify(value));
+              console.log(`Got Value ${value}`)+console.log(value["col-0"].text);
+              translatedLang.value = value["col-0"].text;
             }
           }
         ]
@@ -293,7 +297,7 @@ async function openPicker(numColumns = 1, numOptions = 3, columnOptions = defaul
 
       return options;
     }
-    */
+    
     return {
       add,
       copy,
@@ -311,7 +315,8 @@ async function openPicker(numColumns = 1, numOptions = 3, columnOptions = defaul
       showTranslateBtn,
       addToClipboard,
       showAfterTranslate,
-      //openPicker
+      openPicker,
+      translatedLang
        
     }
 
