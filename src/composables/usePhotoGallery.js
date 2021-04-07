@@ -18,13 +18,6 @@ export function usePhotoGallery() {
         quality: 100,
  
       });
-      console.log(cameraPhoto.webPath)
-      console.log(cameraPhoto.base64String)
-      console.log(cameraPhoto.exif)
-      console.log(cameraPhoto.path)
-      console.log(cameraPhoto.dataUrl)
-      console.log(cameraPhoto.webPath)
-
 
       var imageUrl = cameraPhoto.webPath 
       var imageBase = cameraPhoto.base64String

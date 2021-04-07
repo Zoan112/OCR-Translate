@@ -8,12 +8,12 @@
       </ion-toolbar>
     </ion-header>
     
-    <ion-content :fullscreen="true">
-      <ion-header collapse="condense">
-        <ion-toolbar>
+    <ion-content :fullscreen="false" class="has-header">
+     <!--  <ion-header collapse="condense">
+       <ion-toolbar>
           <ion-title size="large">WWW</ion-title>
         </ion-toolbar>
-      </ion-header>
+      </ion-header>-->
 
 
       <!-- FAB Add button  -->
@@ -30,13 +30,21 @@
   
     </ion-fab>
            
-      <ion-button @click="openPicker()" fill="outline">Translate into: {{translatedLang}}</ion-button>
-  <ion-button @click="debug">Click debug</ion-button>
+   
+
 
     <!--  Container -->
+
       <div id="container">
+       
              <strong v-if="!toogleImg">Click the  <ion-icon icon="add" :md="add" ></ion-icon> Button to scan document</strong>
-      <ion-card v-if="toogleImg">
+    <ion-row class="ion-no-padding">
+          <ion-col>
+</ion-col>
+
+    <ion-col  size-xs="12" size-md="9" size-lg="7">
+     
+      <ion-card  v-if="toogleImg">
         
           <img v-if="toogleImg" :src="'data:image/jpeg;base64,'+ base">
           <br>
@@ -50,8 +58,9 @@
 
 <ion-grid>
   <ion-row class="ion-no-padding">
+
     <ion-col>
-            <ion-button @click="openPicker()" v-if="showTranslateBtn" fill="outline">Translate into: {{translatedLang}}</ion-button>
+            <ion-button @click="openPicker()" v-if="showTranslateBtn" fill="outline">Translate into: {{selectedLang}}</ion-button>
     </ion-col>
     <ion-col>
             <ion-button @click="processTranslate" v-if="showTranslateBtn" >Translate</ion-button>
@@ -69,18 +78,16 @@
       <ion-card-content>
         <ion-textarea v-if="showAfterTranslate" v-model="translatedText" auto-grow></ion-textarea>    
       </ion-card-content>
-
-      
- 
       </ion-card>
-
-
-   
+     
+     
+       </ion-col>
+<ion-col>
+</ion-col>
         
-      
-  
+  </ion-row>
       </div>
-
+  
     
     </ion-content>
   </ion-page>
@@ -165,17 +172,11 @@ const sendToOcr = googleFunc.httpsCallable('sendToOcr1');
 
  //Send text reasults to google functions
      const processTranslate = ()=>{
-       googleFunc.useEmulator("localhost", 5001);
+      // googleFunc.useEmulator("localhost", 5001);
        const RSLTFire = RSLT.value
-
-       
      
-        const selctedlang = translatedLang.value;
-      console.log(langCode[0][selctedlang])
+        let selctedlang = selectedLang.value;
         const lang = langCode[0][selctedlang]
-      console.log('from lang:',lang)
-
-
       const sendToTranslate = googleFunc.httpsCallable('processTranlateLang')
 
 sendToTranslate({lang,RSLTFire}).then(result => {
@@ -186,22 +187,6 @@ sendToTranslate({lang,RSLTFire}).then(result => {
 })
      }
 
-      const translatedLang = ref('Hebrew')
-      
-     const langCode = [{"Hebrew":"he", "Spanish": "es", 'Russian': "ru"}]
-
-    const debug = ()=>{
-      console.log('debug')
-        console.log(langCode)
-        
-      console.log(langCode[0].hebrew)
-        const lang = translatedLang.value;
-      console.log(langCode[0][lang])
-      console.log(translatedLang.value)
-      console.log(lang)
-    }
-
- 
 
       const RSLT = ref()
       const translatedText = ref()
@@ -261,15 +246,16 @@ if (translatedText.value !== ''){
 
       await toast.present();
     }
-
      // translatedText.value.select()
-       
       //document.execCommand('copy');
    })
      
     
      ////PICKER
      
+      const selectedLang = ref('Hebrew')
+     const langCode = [{"Hebrew":"he", "Spanish": "es", 'Russian': "ru"}]
+
       const defaultColumnOptions = [
       [
         'Hebrew',
@@ -289,7 +275,7 @@ async function openPicker(numColumns = 1, numOptions = 3, columnOptions = defaul
             text: 'Confirm',
             handler: (value) => {
               console.log(`Got Value ${value}`)+console.log(value["col-0"].text);
-              translatedLang.value = value["col-0"].text;
+              selectedLang.value = value["col-0"].text;
             }
           }
         ]
@@ -340,9 +326,7 @@ async function openPicker(numColumns = 1, numOptions = 3, columnOptions = defaul
       addToClipboard,
       showAfterTranslate,
       openPicker,
-      translatedLang,
-      debug
-       
+      selectedLang 
     }
 
   }
@@ -353,7 +337,7 @@ async function openPicker(numColumns = 1, numOptions = 3, columnOptions = defaul
 <style scoped>
 #container {
   text-align: center;
-  
+  max-height: 100%;
   position: absolute;
   left: 0;
   right: 0;
@@ -386,7 +370,6 @@ ion-textarea{
 }
 
 ion-card{
-  max-height: 100vh;
   overflow: auto;
 }
 </style>
