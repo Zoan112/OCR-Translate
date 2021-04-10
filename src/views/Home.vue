@@ -36,11 +36,7 @@
     <!--  Container -->
 
       <div id="container">
-        <ion-button @click="presentLoading">Show Loading</ion-button>
-         <ion-button @click="debug">Debug</ion-button>
-         <ion-button @click="LoadTimer">LoadTimer</ion-button>
-
-
+        <ion-button @click="startLoad">Start loader</ion-button>
 
              <strong v-if="!toogleImg">Click the  <ion-icon icon="add" :md="add" ></ion-icon> Button to scan document</strong>
     <ion-row class="ion-no-padding">
@@ -65,7 +61,7 @@
   <ion-row class="ion-no-padding">
 
     <ion-col>
-            <ion-button @click="openPicker()" v-if="showTranslateBtn" fill="outline">Translate into: {{selectedLang}}</ion-button>
+            <ion-button @click="openPicker()" v-if="showTranslateBtn" fill="outline">Translate into: 		&#160; <text class="selectedLang">{{selectedLang}}</text></ion-button>
     </ion-col>
     <ion-col>
             <ion-button @click="processTranslate" v-if="showTranslateBtn" >Translate</ion-button>
@@ -235,35 +231,12 @@ const loading = await loadingController
         });
 
         await loading.present();
-        //return await loading
-/*
- setTimeout(()=>{
-loading.dismiss()
- }, 2000)
- */
+
     }
-
-    
   
-
-    const debug = ()=>{
-      presentLoading()
-    }
-
-
-const LoadTimer = ()=>{
-  console.log('start')
- setTimeout(()=>{
-    console.log('out')
-   loadingController.dismiss();
- }, 5000)
-}
-
-   
-   
-    
-      
-  
+  const startLoad = ()=>{
+    presentLoading()
+  }
   const showTranslateBtn = ref(false)
 
   watch(RSLT, ()=>{
@@ -388,9 +361,7 @@ async function openPicker(numColumns = 1, numOptions = 3, columnOptions = defaul
       showAfterTranslate,
       openPicker,
       selectedLang,
-      presentLoading, 
-      debug,
-      LoadTimer
+      startLoad
     }
 
   }
@@ -436,4 +407,10 @@ ion-textarea{
 ion-card{
   overflow: auto;
 }
+
+.selectedLang{
+  font-weight: 550;
+  text-decoration: underline;
+}
 </style>
+
