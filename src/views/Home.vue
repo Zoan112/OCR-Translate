@@ -36,7 +36,7 @@
     <!--  Container -->
 
       <div id="container">
-        <ion-button @click="startLoad">Start loader</ion-button>
+      
 
              <strong v-if="!toogleImg">Click the  <ion-icon icon="add" :md="add" ></ion-icon> Button to scan document</strong>
     <ion-row class="ion-no-padding">
@@ -234,9 +234,7 @@ const loading = await loadingController
 
     }
   
-  const startLoad = ()=>{
-    presentLoading()
-  }
+
   const showTranslateBtn = ref(false)
 
   watch(RSLT, ()=>{
@@ -361,7 +359,6 @@ async function openPicker(numColumns = 1, numOptions = 3, columnOptions = defaul
       showAfterTranslate,
       openPicker,
       selectedLang,
-      startLoad
     }
 
   }
