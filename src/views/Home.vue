@@ -36,7 +36,12 @@
     <!--  Container -->
 
       <div id="container">
-       
+        <ion-button @click="presentLoading">Show Loading</ion-button>
+         <ion-button @click="debug">Debug</ion-button>
+         <ion-button @click="LoadTimer">LoadTimer</ion-button>
+
+
+
              <strong v-if="!toogleImg">Click the  <ion-icon icon="add" :md="add" ></ion-icon> Button to scan document</strong>
     <ion-row class="ion-no-padding">
           <ion-col>
@@ -108,7 +113,8 @@ import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonFab, IonFabBut
     toastController,
     IonToast,
     IonDatetime,
-    pickerController} from '@ionic/vue';
+    pickerController,
+    loadingController} from '@ionic/vue';
 
 
 
@@ -155,8 +161,8 @@ export default defineComponent({
 
     //Send base Img to google functions
      const processOcr = ()=>{
-
 // googleFunc.useEmulator("localhost", 5001);
+presentLoading()
 var baseFire = base.value
 
 console.log ('basefire', baseFire)
@@ -166,13 +172,15 @@ const sendToOcr = googleFunc.httpsCallable('sendToOcr1');
       console.log(result.data);
        const parseOcr = JSON.parse(result.data)
         RSLT.value = parseOcr
-    });
+    }).then(() =>{ closeLoading()});
   
      }
 
  //Send text reasults to google functions
      const processTranslate = ()=>{
       // googleFunc.useEmulator("localhost", 5001);
+      presentLoading()
+      console.log('present loading')
        const RSLTFire = RSLT.value
      
         let selctedlang = selectedLang.value;
@@ -184,7 +192,7 @@ sendToTranslate({lang,RSLTFire}).then(result => {
   console.log(result.data)
   
   translatedText.value = JSON.parse(result.data)
-})
+}).then(() =>{ closeLoading()})
      }
 
 
@@ -201,9 +209,60 @@ let toogleImg = ref(false)
        toogleImg.value = false
      }else if(base.value !== ''){
        toogleImg.value = true
+       
+      
      }
 
    })
+
+
+
+  
+  const closeLoading = async ()=>{
+await loadingController.dismiss()
+  }
+
+   /*load control*/
+
+   const showLoad = ref('true')
+
+   const presentLoading = async ()=>{
+const loading = await loadingController
+        .create({
+          cssClass: 'my-custom-class',
+          message: 'Please wait...',
+          duration: true,
+        });
+
+        await loading.present();
+        //return await loading
+/*
+ setTimeout(()=>{
+loading.dismiss()
+ }, 2000)
+ */
+    }
+
+    
+  
+
+    const debug = ()=>{
+      presentLoading()
+    }
+
+
+const LoadTimer = ()=>{
+  console.log('start')
+ setTimeout(()=>{
+    console.log('out')
+   loadingController.dismiss();
+ }, 5000)
+}
+
+   
+   
+    
+      
   
   const showTranslateBtn = ref(false)
 
@@ -213,6 +272,8 @@ let toogleImg = ref(false)
        showTranslateBtn.value = false
      }else if(RSLT.value !== ''){
        showTranslateBtn.value = true
+      
+        console.log('dissmiss')
      }
 
    })
@@ -326,7 +387,10 @@ async function openPicker(numColumns = 1, numOptions = 3, columnOptions = defaul
       addToClipboard,
       showAfterTranslate,
       openPicker,
-      selectedLang 
+      selectedLang,
+      presentLoading, 
+      debug,
+      LoadTimer
     }
 
   }
