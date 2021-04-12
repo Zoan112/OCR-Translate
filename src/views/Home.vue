@@ -1,135 +1,164 @@
-
 <template>
   <ion-page>
     <ion-header :translucent="true">
       <ion-toolbar>
         <ion-title>OCR-Translate</ion-title>
-       
       </ion-toolbar>
     </ion-header>
-    
+
     <ion-content :fullscreen="false" class="has-header">
-     <!--  <ion-header collapse="condense">
+      <!--  <ion-header collapse="condense">
        <ion-toolbar>
           <ion-title size="large">WWW</ion-title>
         </ion-toolbar>
       </ion-header>-->
 
-
       <!-- FAB Add button  -->
 
-    <ion-fab edge vertical="top" horizontal="end" slot="fixed">
-
-      <ion-fab-button>
-        <ion-icon :name="add" :icon="add" :md="add"></ion-icon>
-      </ion-fab-button>
+      <ion-fab edge vertical="top" horizontal="end" slot="fixed">
+        <ion-fab-button>
+          <ion-icon :name="add" :icon="add" :md="add"></ion-icon>
+        </ion-fab-button>
 
         <ion-fab-list side="bottom">
-        <ion-fab-button @click="takePhoto()"><ion-icon :icon="camera" :md="camera"></ion-icon></ion-fab-button>
-      </ion-fab-list>
-  
-    </ion-fab>
-           
-   
-
-
-    <!--  Container -->
+          <ion-fab-button @click="takePhoto()"
+            ><ion-icon :icon="camera" :md="camera"></ion-icon
+          ></ion-fab-button>
+        </ion-fab-list>
+      </ion-fab>
+      <ion-button @click="printUserInfo">printUserInfo</ion-button>
+      <!--  Container -->
 
       <div id="container">
-      
+        <strong v-if="!toogleImg"
+          >Click the <ion-icon icon="add" :md="add"></ion-icon> Button to scan
+          document</strong
+        >
+        <ion-row class="ion-no-padding">
+          <ion-col> </ion-col>
 
-             <strong v-if="!toogleImg">Click the  <ion-icon icon="add" :md="add" ></ion-icon> Button to scan document</strong>
-    <ion-row class="ion-no-padding">
-          <ion-col>
-</ion-col>
+          <ion-col size-xs="12" size-md="9" size-lg="7">
+            <ion-card v-if="toogleImg">
+              <img v-if="toogleImg" :src="'data:image/jpeg;base64,' + base" />
+              <br />
+              <ion-button @click="processOcr" v-if="toogleImg"
+                >Process</ion-button
+              >
 
-    <ion-col  size-xs="12" size-md="9" size-lg="7">
-     
-      <ion-card  v-if="toogleImg">
-        
-          <img v-if="toogleImg" :src="'data:image/jpeg;base64,'+ base">
-          <br>
-            <ion-button @click="processOcr" v-if="toogleImg" >Process</ion-button> 
+              <ion-card-content>
+                <ion-textarea
+                  v-if="showTranslateBtn"
+                  v-model="RSLT"
+                  auto-grow
+                ></ion-textarea>
+              </ion-card-content>
 
-    <ion-card-content>  
+              <ion-grid>
+                <ion-row class="ion-no-padding">
+                  <ion-col>
+                    <ion-button
+                      @click="openPicker()"
+                      v-if="showTranslateBtn"
+                      fill="outline"
+                      >Translate into: &#160;
+                      <text class="selectedLang">{{
+                        selectedLang
+                      }}</text></ion-button
+                    >
+                  </ion-col>
+                  <ion-col>
+                    <ion-button
+                      @click="processTranslate"
+                      v-if="showTranslateBtn"
+                      >Translate</ion-button
+                    >
+                  </ion-col>
 
-   <ion-textarea v-if="showTranslateBtn" v-model="RSLT" auto-grow></ion-textarea>
-    </ion-card-content>
+                  <ion-col v-if="showAfterTranslate">
+                    <ion-button
+                      @click="addToClipboard"
+                      fill="outline"
+                      v-if="showAfterTranslate"
+                      ><ion-icon
+                        color="#3171e0"
+                        name="copy"
+                        size="large"
+                        :icon="copy"
+                        :md="copy"
+                      ></ion-icon
+                    ></ion-button>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
 
-
-<ion-grid>
-  <ion-row class="ion-no-padding">
-
-    <ion-col>
-            <ion-button @click="openPicker()" v-if="showTranslateBtn" fill="outline">Translate into: 		&#160; <text class="selectedLang">{{selectedLang}}</text></ion-button>
-    </ion-col>
-    <ion-col>
-            <ion-button @click="processTranslate" v-if="showTranslateBtn" >Translate</ion-button>
-    </ion-col>
-
-    <ion-col v-if="showAfterTranslate">
-             <ion-button @click="addToClipboard" fill="outline" v-if="showAfterTranslate"><ion-icon color="#3171e0" name="copy" size="large" :icon="copy" :md="copy"></ion-icon></ion-button>
-    </ion-col>
-
-        
-  </ion-row>
-</ion-grid>
-
-
-      <ion-card-content>
-        <ion-textarea v-if="showAfterTranslate" v-model="translatedText" auto-grow></ion-textarea>    
-      </ion-card-content>
-      </ion-card>
-     
-     
-       </ion-col>
-<ion-col>
-</ion-col>
-        
-  </ion-row>
+              <ion-card-content>
+                <ion-textarea
+                  v-if="showAfterTranslate"
+                  v-model="translatedText"
+                  auto-grow
+                ></ion-textarea>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+          <ion-col> </ion-col>
+        </ion-row>
       </div>
-  
-    
     </ion-content>
   </ion-page>
 </template>
 
 <script>
- /* eslint-disable */
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar, IonFab, IonFabButton, IonIcon, 
-    IonFabList, 
-    IonGrid, 
-    IonRow, 
-    IonCol, 
-    IonImg, 
-    IonCard,
-    IonCardContent,
-    IonTextarea,
-    IonButton,
-    toastController,
-    IonToast,
-    IonDatetime,
-    pickerController,
-    loadingController} from '@ionic/vue';
+/* eslint-disable */
+import {
+  IonContent,
+  IonHeader,
+  IonPage,
+  IonTitle,
+  IonToolbar,
+  IonFab,
+  IonFabButton,
+  IonIcon,
+  IonFabList,
+  IonGrid,
+  IonRow,
+  IonCol,
+  IonImg,
+  IonCard,
+  IonCardContent,
+  IonTextarea,
+  IonButton,
+  toastController,
+  IonToast,
+  IonDatetime,
+  pickerController,
+  loadingController
+} from "@ionic/vue";
 
+import {
+  computed,
+  defineComponent,
+  reactive,
+  ref,
+  watch,
+  watchEffect
+} from "vue";
 
+import { add, camera, trash, close, copy } from "ionicons/icons";
 
+import {
+  usePhotoGallery,
+  sendtoVue,
+  imageSrc,
+  base
+} from "@/composables/usePhotoGallery";
+import { CameraSource } from "@capacitor/core";
 
-import { computed, defineComponent , reactive, ref, watch, watchEffect} from 'vue';
+import googleFunc from "../main.js";
 
-import {add, camera, trash, close, copy} from "ionicons/icons";
-
-import { usePhotoGallery, sendtoVue, imageSrc, base } from '@/composables/usePhotoGallery';
-import { CameraSource } from '@capacitor/core';
- 
-import googleFunc from '../main.js'
-
-
-
+import googleAuth from "../main.js";
 
 export default defineComponent({
-
-  name: 'Home',
+  name: "Home",
   components: {
     IonContent,
     IonHeader,
@@ -139,10 +168,10 @@ export default defineComponent({
     IonFab,
     IonFabButton,
     IonIcon,
-    IonFabList, 
-    IonGrid, 
-    IonRow, 
-    IonCol, 
+    IonFabList,
+    IonGrid,
+    IonRow,
+    IonCol,
     IonImg,
     imageSrc,
     IonButton,
@@ -151,162 +180,163 @@ export default defineComponent({
     IonTextarea
   },
   setup() {
-
     // TakePhoto
-     const { takePhoto} = usePhotoGallery();
+    const { takePhoto } = usePhotoGallery();
+
+    //Firebase auth
+
+    const user = ref(null);
+
+    const printUserInfo = () => {
+      console.log(googleAuth());
+      console.log(firebase.auth());
+    };
 
     //Send base Img to google functions
-     const processOcr = ()=>{
-// googleFunc.useEmulator("localhost", 5001);
-presentLoading()
-var baseFire = base.value
-
-console.log ('basefire', baseFire)
-const sendToOcr = googleFunc.httpsCallable('sendToOcr1');
-    sendToOcr({ baseFire }).then(result => {
-        console.log(result);
-      console.log(result.data);
-       const parseOcr = JSON.parse(result.data)
-        RSLT.value = parseOcr
-    }).then(() =>{ closeLoading()});
-  
-     }
-
- //Send text reasults to google functions
-     const processTranslate = ()=>{
+    const processOcr = () => {
       // googleFunc.useEmulator("localhost", 5001);
-      presentLoading()
-      console.log('present loading')
-       const RSLTFire = RSLT.value
-     
-        let selctedlang = selectedLang.value;
-        const lang = langCode[0][selctedlang]
-      const sendToTranslate = googleFunc.httpsCallable('processTranlateLang')
+      presentLoading();
+      var baseFire = base.value;
 
-sendToTranslate({lang,RSLTFire}).then(result => {
-  console.log(result)
-  console.log(result.data)
-  
-  translatedText.value = JSON.parse(result.data)
-}).then(() =>{ closeLoading()})
-     }
-
-
-      const RSLT = ref()
-      const translatedText = ref()
-
-  
-/* Conditional element rendering*/ 
-let toogleImg = ref(false)
-
-  watch(base, ()=>{
-     if (base.value === ''){
-       console.log("from base.value", base.value)
-       toogleImg.value = false
-     }else if(base.value !== ''){
-       toogleImg.value = true
-       
-      
-     }
-
-   })
-
-
-
-  
-  const closeLoading = async ()=>{
-await loadingController.dismiss()
-  }
-
-   /*load control*/
-
-   const showLoad = ref('true')
-
-   const presentLoading = async ()=>{
-const loading = await loadingController
-        .create({
-          cssClass: 'my-custom-class',
-          message: 'Please wait...',
-          duration: true,
+      console.log("basefire", baseFire);
+      const sendToOcr = googleFunc.httpsCallable("sendToOcr1");
+      sendToOcr({ baseFire })
+        .then(result => {
+          console.log(result);
+          console.log(result.data);
+          const parseOcr = JSON.parse(result.data);
+          RSLT.value = parseOcr;
+        })
+        .then(() => {
+          closeLoading();
         });
+    };
 
-        await loading.present();
+    //Send text reasults to google functions
+    const processTranslate = () => {
+      // googleFunc.useEmulator("localhost", 5001);
+      presentLoading();
+      console.log("present loading");
+      const RSLTFire = RSLT.value;
 
-    }
-  
+      let selctedlang = selectedLang.value;
+      const lang = langCode[0][selctedlang];
+      const sendToTranslate = googleFunc.httpsCallable("processTranlateLang");
 
-  const showTranslateBtn = ref(false)
+      sendToTranslate({ lang, RSLTFire })
+        .then(result => {
+          console.log(result);
+          console.log(result.data);
 
-  watch(RSLT, ()=>{
-     if (RSLT.value === ''){
-       console.log("from RSLT.value = '' ", RSLT.value )
-       showTranslateBtn.value = false
-     }else if(RSLT.value !== ''){
-       showTranslateBtn.value = true
-      
-        console.log('dissmiss')
-     }
+          translatedText.value = JSON.parse(result.data);
+        })
+        .then(() => {
+          closeLoading();
+        });
+    };
 
-   })
+    const RSLT = ref();
+    const translatedText = ref();
 
-const showAfterTranslate = ref(false)
+    /* Conditional element rendering*/
 
-watch(translatedText ,()=>{
-if (translatedText.value !== ''){
-  showAfterTranslate.value = true
-}
-} )
+    let toogleImg = ref(false);
 
+    watch(base, () => {
+      if (base.value === "") {
+        console.log("from base.value", base.value);
+        printUserInfo;
+        toogleImg.value = false;
+      } else if (base.value !== "") {
+        toogleImg.value = true;
+      }
+    });
 
+    const closeLoading = async () => {
+      await loadingController.dismiss();
+    };
 
-//Add translated text to clipboard
-//getInputElement() => Promise<IonTextarea>
+    /*load control*/
 
-   const addToClipboard = (()=>{
-     console.log(translatedText.value)
-    
-    navigator.clipboard.writeText(translatedText.value)
-  
-  handleButtonClick()
-       async function handleButtonClick() {
-      const toast = await toastController.create({
-        color: 'dark',
-        duration: 2000,
-        message: 'Copied to clipboard',
-        showCloseButton: true
+    const showLoad = ref("true");
+
+    const presentLoading = async () => {
+      const loading = await loadingController.create({
+        cssClass: "my-custom-class",
+        message: "Please wait...",
+        duration: true
       });
 
-      await toast.present();
-    }
-     // translatedText.value.select()
-      //document.execCommand('copy');
-   })
-     
-    
-     ////PICKER
-     
-      const selectedLang = ref('Hebrew')
-     const langCode = [{"Hebrew":"he", "Spanish": "es", 'Russian': "ru"}]
+      await loading.present();
+    };
 
-      const defaultColumnOptions = [
-      [
-        'Hebrew',
-        'Spanish',
-        'Russian',
-      ]
-    ]
-async function openPicker(numColumns = 1, numOptions = 3, columnOptions = defaultColumnOptions){
+    const showTranslateBtn = ref(false);
+
+    watch(RSLT, () => {
+      if (RSLT.value === "") {
+        console.log("from RSLT.value = '' ", RSLT.value);
+        showTranslateBtn.value = false;
+      } else if (RSLT.value !== "") {
+        showTranslateBtn.value = true;
+
+        console.log("dissmiss");
+      }
+    });
+
+    const showAfterTranslate = ref(false);
+
+    watch(translatedText, () => {
+      if (translatedText.value !== "") {
+        showAfterTranslate.value = true;
+      }
+    });
+
+    //Add translated text to clipboard
+    //getInputElement() => Promise<IonTextarea>
+
+    const addToClipboard = () => {
+      console.log(translatedText.value);
+
+      navigator.clipboard.writeText(translatedText.value);
+
+      handleButtonClick();
+      async function handleButtonClick() {
+        const toast = await toastController.create({
+          color: "dark",
+          duration: 2000,
+          message: "Copied to clipboard",
+          showCloseButton: true
+        });
+
+        await toast.present();
+      }
+      // translatedText.value.select()
+      //document.execCommand('copy');
+    };
+
+    ////PICKER
+
+    const selectedLang = ref("Hebrew");
+    const langCode = [{ Hebrew: "he", Spanish: "es", Russian: "ru" }];
+
+    const defaultColumnOptions = [["Hebrew", "Spanish", "Russian"]];
+    async function openPicker(
+      numColumns = 1,
+      numOptions = 3,
+      columnOptions = defaultColumnOptions
+    ) {
       const picker = await pickerController.create({
         columns: getColumns(numColumns, numOptions, columnOptions),
         buttons: [
           {
-            text: 'Cancel',
-            role: 'cancel'
+            text: "Cancel",
+            role: "cancel"
           },
           {
-            text: 'Confirm',
-            handler: (value) => {
-              console.log(`Got Value ${value}`)+console.log(value["col-0"].text);
+            text: "Confirm",
+            handler: value => {
+              console.log(`Got Value ${value}`) +
+                console.log(value["col-0"].text);
               selectedLang.value = value["col-0"].text;
             }
           }
@@ -334,12 +364,12 @@ async function openPicker(numColumns = 1, numOptions = 3, columnOptions = defaul
         options.push({
           text: columnOptions[columnIndex][i % numOptions],
           value: i
-        })
+        });
       }
 
       return options;
     }
-    
+
     return {
       add,
       copy,
@@ -359,10 +389,9 @@ async function openPicker(numColumns = 1, numOptions = 3, columnOptions = defaul
       showAfterTranslate,
       openPicker,
       selectedLang,
-    }
-
+      printUserInfo
+    };
   }
-  
 });
 </script>
 
@@ -385,9 +414,7 @@ async function openPicker(numColumns = 1, numOptions = 3, columnOptions = defaul
 #container p {
   font-size: 16px;
   line-height: 22px;
-  
   color: #8c8c8c;
-  
   margin: 0;
 }
 
@@ -395,19 +422,17 @@ async function openPicker(numColumns = 1, numOptions = 3, columnOptions = defaul
   text-decoration: none;
 }
 
-
-ion-textarea{
-  background:#f0f8ff;
-  border-radius: 10px
+ion-textarea {
+  background: #f0f8ff;
+  border-radius: 10px;
 }
 
-ion-card{
+ion-card {
   overflow: auto;
 }
 
-.selectedLang{
+.selectedLang {
   font-weight: 550;
   text-decoration: underline;
 }
 </style>
-
