@@ -3,29 +3,33 @@
     <ion-header :translucent="true">
       <ion-toolbar>
         <ion-title>OCR-Translate</ion-title>
+        <ion-avatar slot="end">
+          <img :src=userAvatar />
+        </ion-avatar>
       </ion-toolbar>
     </ion-header>
 
     <ion-content :fullscreen="false" class="has-header">
-      <!--  <ion-header collapse="condense">
-       <ion-toolbar>
+      <ion-header collapse="condense">
+        <ion-toolbar>
           <ion-title size="large">WWW</ion-title>
         </ion-toolbar>
-      </ion-header>-->
+      </ion-header>
 
       <!-- FAB Add button  -->
 
-      <ion-fab edge vertical="top" horizontal="end" slot="fixed">
+      <ion-fab vertical="bottom" horizontal="end" slot="fixed">
         <ion-fab-button>
           <ion-icon :name="add" :icon="add" :md="add"></ion-icon>
         </ion-fab-button>
 
-        <ion-fab-list side="bottom">
+        <ion-fab-list side="top">
           <ion-fab-button @click="takePhoto()"
             ><ion-icon :icon="camera" :md="camera"></ion-icon
           ></ion-fab-button>
         </ion-fab-list>
       </ion-fab>
+
       <ion-button @click="printUserInfo">printUserInfo</ion-button>
       <!--  Container -->
 
@@ -131,7 +135,8 @@ import {
   IonToast,
   IonDatetime,
   pickerController,
-  loadingController
+  loadingController,
+  IonAvatar
 } from "@ionic/vue";
 
 import {
@@ -140,7 +145,8 @@ import {
   reactive,
   ref,
   watch,
-  watchEffect
+  watchEffect,
+  onMounted
 } from "vue";
 
 import { add, camera, trash, close, copy } from "ionicons/icons";
@@ -155,7 +161,7 @@ import { CameraSource } from "@capacitor/core";
 
 import googleFunc from "../main.js";
 
-import googleAuth from "../main.js";
+import firebase from "firebase";
 
 export default defineComponent({
   name: "Home",
@@ -177,7 +183,8 @@ export default defineComponent({
     IonButton,
     IonCard,
     IonCardContent,
-    IonTextarea
+    IonTextarea,
+    IonAvatar
   },
   setup() {
     // TakePhoto
@@ -187,11 +194,42 @@ export default defineComponent({
 
     const user = ref(null);
 
-    const printUserInfo = () => {
-      console.log(googleAuth());
-      console.log(firebase.auth());
-    };
+    const userAvatar = ref(null);
+      
 
+    const printUserInfo = () => {
+      // console.log(googleAuth());
+      //   console.log(firebase.auth());
+      console.log(userAvatar);
+
+      firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+          // User is signed in.
+          console.log(user);
+          console.log(user.displayName);
+        } else {
+          // No user is signed in.
+          console.log("not lodged", user);
+        }
+      });
+    };
+    
+    ///Auth
+    onMounted(() => {
+      firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+          // User is signed in.
+          console.log(user);
+          console.log(user.displayName);
+         userAvatar.value = user.photoURL;
+          console.log(userAvatar.value);
+        } else {
+          // No user is signed in.
+          console.log("not lodged", user);
+        }
+      });
+    });
+    
     //Send base Img to google functions
     const processOcr = () => {
       // googleFunc.useEmulator("localhost", 5001);
@@ -389,7 +427,8 @@ export default defineComponent({
       showAfterTranslate,
       openPicker,
       selectedLang,
-      printUserInfo
+      printUserInfo,
+      userAvatar
     };
   }
 });
