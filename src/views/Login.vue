@@ -7,6 +7,11 @@
     </ion-header>
     <ion-content>
       <section id="firebaseui-auth-container"></section>
+
+      <p>
+        For demo log-in, press sing-up with Email. <br />Credentials:
+        <br />Email: ocrtranslate@protonmail.com <br />Password: ocrdemo
+      </p>
     </ion-content>
   </ion-page>
 </template>
@@ -55,4 +60,8 @@ export default defineComponent({
 });
 </script>
 
-<style></style>
+<style scoped>
+p {
+  text-align: center;
+}
+</style>

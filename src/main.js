@@ -53,9 +53,9 @@ router.isReady().then(() => {
 
 const googleFunc = firebase.functions();
 
-const googleAuth = firebase.functions();
 
-export default googleFunc + firebase + googleAuth;
+
+export default googleFunc + firebase ;
 console.log("from main", googleFunc);
 console.log("from main firebase auth", firebase.auth());
 console.log("from main firebase auth", firebase.auth().onAuthStateChanged);

@@ -3,36 +3,45 @@
     <ion-header :translucent="true">
       <ion-toolbar>
         <ion-title>OCR-Translate</ion-title>
+
         <ion-avatar slot="end">
-          <img @click="openMenu" :src= userAvatar />
+          <img class="userAvatar" @click="openMenu" :src="userAvatar" />
         </ion-avatar>
+
+        <ion-icon
+          class="hamburgerMenu"
+          @click="openMenu"
+          slot="end"
+          name="menu"
+          :md="menu"
+        ></ion-icon>
       </ion-toolbar>
     </ion-header>
     <!--Menu-->
 
+    <ion-menu
+      side="end"
+      menu-id="custom"
+      class="my-custom-menu"
+      content-id="content"
+    >
+      <ion-header>
+        <ion-toolbar color="primary">
+          <ion-title>{{ userName }}</ion-title>
+          <ion-avatar class="userAvatar" slot="end">
+            <img @click="closeMenu" :src="userAvatar" />
+          </ion-avatar>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content>
+        <ion-list>
+          <ion-item @click="history">Translation History</ion-item>
+          <ion-item @click="signOut">Sign Out</ion-item>
+        </ion-list>
+      </ion-content>
+    </ion-menu>
 
-  <ion-menu side="end" menu-id="custom" class="my-custom-menu" content-id="content">
-    <ion-header>
-      <ion-toolbar color="tertiary">
-        <ion-title>{{userName}}</ion-title>
-          <ion-avatar slot="end">
-          <img  :src=userAvatar />
-        </ion-avatar>
-      </ion-toolbar>
-    </ion-header>
-    <ion-content>
-      <ion-list>
-        
-        <ion-item>Translation History</ion-item>
-        <ion-item @click="signOut">Sign Out</ion-item>
-      </ion-list>
-    </ion-content>
-  </ion-menu>
-    
-
-  
-
-    <ion-content :fullscreen="false" class="has-header" id="content"> 
+    <ion-content :fullscreen="false" class="has-header" id="content">
       <!--<ion-header collapse="condense">
         <ion-toolbar>
           <ion-title size="large">WWW</ion-title>
@@ -53,7 +62,7 @@
         </ion-fab-list>
       </ion-fab>
 
-      <ion-button @click="printUserInfo">printUserInfo</ion-button>
+      <!-- <ion-button @click="printUserInfo">printUserInfo</ion-button>-->
       <!--  Container -->
 
       <div id="container">
@@ -161,12 +170,10 @@ import {
   loadingController,
   IonAvatar,
   menuController,
-    IonMenu,
- IonItem,
- IonList
+  IonMenu,
+  IonItem,
+  IonList
 } from "@ionic/vue";
-
-
 
 import {
   computed,
@@ -175,12 +182,12 @@ import {
   ref,
   watch,
   watchEffect,
-  onMounted,
+  onMounted
 } from "vue";
 
-import { useRouter } from 'vue-router'
+import { useRouter } from "vue-router";
 
-import { add, camera, trash, close, copy } from "ionicons/icons";
+import { add, camera, trash, close, copy, menu } from "ionicons/icons";
 
 import {
   usePhotoGallery,
@@ -217,25 +224,25 @@ export default defineComponent({
     IonTextarea,
     IonAvatar,
     IonMenu,
-   IonItem,
-   IonList,
-
+    IonItem,
+    IonList
   },
   setup() {
     // TakePhoto
     const { takePhoto } = usePhotoGallery();
 
-    const router = useRouter()
+    const router = useRouter();
 
     //Firebase auth
 
     const user = ref(null);
 
     const userAvatar = ref(null);
+    userAvatar.value = "../assets/avatar.svg";
 
     const userName = ref(null);
-      
-///Auth
+
+    ///Auth
     onMounted(() => {
       firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
@@ -243,7 +250,11 @@ export default defineComponent({
           console.log(user);
           console.log(user.displayName);
           userName.value = user.displayName;
-         userAvatar.value = user.photoURL;
+          userAvatar.value = user.photoURL;
+          if (userAvatar.value == null) {
+            userAvatar.value = "../assets/avatar.svg";
+            console.log("userAvatar.value == null");
+          }
           console.log(userAvatar.value);
         } else {
           // No user is signed in.
@@ -254,23 +265,31 @@ export default defineComponent({
 
     //SignOut
 
-    const signOut = ()=>{
-      firebase.auth().signOut()
-     router.push({ path: 'login' })
-    }
+    const signOut = () => {
+      firebase.auth().signOut();
+      router.push({ path: "login" });
+    };
 
-    //Menu 
-    const openMenu = ()=> {
-      console.log('open Menu');
-     menuController.enable(true, 'custom');
-      menuController.open('custom');
-      
-    }
+    //Menu
+    const openMenu = () => {
+      console.log("open Menu");
+      menuController.enable(true, "custom");
+      menuController.open("custom");
+    };
 
+    const closeMenu = () => {
+      menuController.close("custom");
+    };
+
+    //History
+    const history = () => {
+      alert("work in progress. please try again later.");
+    };
 
     const printUserInfo = () => {
       // console.log(googleAuth());
       //   console.log(firebase.auth());
+
       console.log(userAvatar);
 
       firebase.auth().onAuthStateChanged(function(user) {
@@ -284,9 +303,7 @@ export default defineComponent({
         }
       });
     };
-    
-    
-    
+
     //Send base Img to google functions
     const processOcr = () => {
       // googleFunc.useEmulator("localhost", 5001);
@@ -294,7 +311,7 @@ export default defineComponent({
       var baseFire = base.value;
 
       console.log("basefire", baseFire);
-      const sendToOcr = googleFunc.httpsCallable("sendToOcr1");
+      const sendToOcr = firebase.functions().httpsCallable("sendToOcr1");
       sendToOcr({ baseFire })
         .then(result => {
           console.log(result);
@@ -316,7 +333,9 @@ export default defineComponent({
 
       let selctedlang = selectedLang.value;
       const lang = langCode[0][selctedlang];
-      const sendToTranslate = googleFunc.httpsCallable("processTranlateLang");
+      const sendToTranslate = firebase
+        .functions()
+        .httpsCallable("processTranlateLang");
 
       sendToTranslate({ lang, RSLTFire })
         .then(result => {
@@ -470,6 +489,7 @@ export default defineComponent({
       copy,
       camera,
       trash,
+      menu,
       close,
       takePhoto,
       imageSrc,
@@ -488,8 +508,9 @@ export default defineComponent({
       userName,
       userAvatar,
       openMenu,
-      signOut
-     
+      signOut,
+      history,
+      closeMenu
     };
   }
 });
@@ -534,5 +555,28 @@ ion-card {
 .selectedLang {
   font-weight: 550;
   text-decoration: underline;
+}
+
+.userAvatar {
+  padding: 5px;
+}
+
+.userAvatar:hover {
+  cursor: pointer;
+}
+
+.hamburgerMenu:hover {
+  cursor: pointer;
+  color: gray;
+}
+
+.hamburgerMenu {
+  font-size: 60px;
+}
+
+ion-item:hover {
+  /*--background-hover: red;*/
+  --background: #bdc3c7;
+  cursor: pointer;
 }
 </style>
