@@ -3,41 +3,41 @@
     <ion-header :translucent="true">
       <ion-toolbar>
         <ion-title>OCR-Translate</ion-title>
-        <ion-content>
         <ion-avatar slot="end">
-          <!--<img @click="openPopover" :src=userAvatar />-->
+          <img @click="openMenu" :src= userAvatar />
         </ion-avatar>
-        </ion-content>
       </ion-toolbar>
     </ion-header>
     <!--Menu-->
 
-  <ion-menu side="start" menu-id="custom" class="my-custom-menu" content-id="content">
+
+  <ion-menu side="end" menu-id="custom" class="my-custom-menu" content-id="content">
     <ion-header>
       <ion-toolbar color="tertiary">
-        <ion-title>Custom Menu</ion-title>
+        <ion-title>{{userName}}</ion-title>
+          <ion-avatar slot="end">
+          <img  :src=userAvatar />
+        </ion-avatar>
       </ion-toolbar>
     </ion-header>
     <ion-content>
       <ion-list>
-        <ion-item>Menu Item</ion-item>
-        <ion-item>Menu Item</ion-item>
-        <ion-item>Menu Item</ion-item>
-        <ion-item>Menu Item</ion-item>
-        <ion-item>Menu Item</ion-item>
+        
+        <ion-item>Translation History</ion-item>
+        <ion-item>Sign Out</ion-item>
       </ion-list>
     </ion-content>
   </ion-menu>
-     <ion-menu-controller></ion-menu-controller>
-   <ion-router-outlet id="content"></ion-router-outlet>
+    
+
   
 
     <ion-content :fullscreen="false" class="has-header" id="content"> 
-      <ion-header collapse="condense">
+      <!--<ion-header collapse="condense">
         <ion-toolbar>
           <ion-title size="large">WWW</ion-title>
         </ion-toolbar>
-      </ion-header>
+      </ion-header>-->
 
       <!-- FAB Add button  -->
 
@@ -55,9 +55,6 @@
 
       <ion-button @click="printUserInfo">printUserInfo</ion-button>
       <!--  Container -->
-
-
-<ion-button @click="openMenu" expand="full">menu?</ion-button>
 
       <div id="container">
         <strong v-if="!toogleImg"
@@ -165,7 +162,6 @@ import {
   IonAvatar,
   menuController,
     IonMenu,
-    IonRouterOutlet,
  IonItem,
  IonList
 } from "@ionic/vue";
@@ -219,7 +215,6 @@ export default defineComponent({
     IonTextarea,
     IonAvatar,
     IonMenu,
-    IonRouterOutlet,
    IonItem,
    IonList,
 
@@ -228,6 +223,30 @@ export default defineComponent({
     // TakePhoto
     const { takePhoto } = usePhotoGallery();
 
+    //Firebase auth
+
+    const user = ref(null);
+
+    const userAvatar = ref(null);
+
+    const userName = ref(null);
+      
+///Auth
+    onMounted(() => {
+      firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+          // User is signed in.
+          console.log(user);
+          console.log(user.displayName);
+          userName.value = user.displayName;
+         userAvatar.value = user.photoURL;
+          console.log(userAvatar.value);
+        } else {
+          // No user is signed in.
+          console.log("not lodged", user);
+        }
+      });
+    });
 
     //Menu 
     const openMenu = ()=> {
@@ -236,13 +255,6 @@ export default defineComponent({
       menuController.open('custom');
       
     }
-
-    //Firebase auth
-
-    const user = ref(null);
-
-    const userAvatar = ref(null);
-      
 
 
     const printUserInfo = () => {
@@ -262,21 +274,7 @@ export default defineComponent({
       });
     };
     
-    ///Auth
-    onMounted(() => {
-      firebase.auth().onAuthStateChanged(function(user) {
-        if (user) {
-          // User is signed in.
-          console.log(user);
-          console.log(user.displayName);
-         userAvatar.value = user.photoURL;
-          console.log(userAvatar.value);
-        } else {
-          // No user is signed in.
-          console.log("not lodged", user);
-        }
-      });
-    });
+    
     
     //Send base Img to google functions
     const processOcr = () => {
@@ -476,6 +474,7 @@ export default defineComponent({
       openPicker,
       selectedLang,
       printUserInfo,
+      userName,
       userAvatar,
       openMenu,
      
