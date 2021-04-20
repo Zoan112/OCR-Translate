@@ -3,13 +3,36 @@
     <ion-header :translucent="true">
       <ion-toolbar>
         <ion-title>OCR-Translate</ion-title>
+        <ion-content>
         <ion-avatar slot="end">
-          <img :src=userAvatar />
+          <!--<img @click="openPopover" :src=userAvatar />-->
         </ion-avatar>
+        </ion-content>
       </ion-toolbar>
     </ion-header>
+    <!--Menu-->
 
-    <ion-content :fullscreen="false" class="has-header">
+  <ion-menu side="start" menu-id="custom" class="my-custom-menu" content-id="content">
+    <ion-header>
+      <ion-toolbar color="tertiary">
+        <ion-title>Custom Menu</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <ion-list>
+        <ion-item>Menu Item</ion-item>
+        <ion-item>Menu Item</ion-item>
+        <ion-item>Menu Item</ion-item>
+        <ion-item>Menu Item</ion-item>
+        <ion-item>Menu Item</ion-item>
+      </ion-list>
+    </ion-content>
+  </ion-menu>
+     <ion-menu-controller></ion-menu-controller>
+   <ion-router-outlet id="content"></ion-router-outlet>
+  
+
+    <ion-content :fullscreen="false" class="has-header" id="content"> 
       <ion-header collapse="condense">
         <ion-toolbar>
           <ion-title size="large">WWW</ion-title>
@@ -32,6 +55,9 @@
 
       <ion-button @click="printUserInfo">printUserInfo</ion-button>
       <!--  Container -->
+
+
+<ion-button @click="openMenu" expand="full">menu?</ion-button>
 
       <div id="container">
         <strong v-if="!toogleImg"
@@ -136,8 +162,15 @@ import {
   IonDatetime,
   pickerController,
   loadingController,
-  IonAvatar
+  IonAvatar,
+  menuController,
+    IonMenu,
+    IonRouterOutlet,
+ IonItem,
+ IonList
 } from "@ionic/vue";
+
+
 
 import {
   computed,
@@ -184,11 +217,25 @@ export default defineComponent({
     IonCard,
     IonCardContent,
     IonTextarea,
-    IonAvatar
+    IonAvatar,
+    IonMenu,
+    IonRouterOutlet,
+   IonItem,
+   IonList,
+
   },
   setup() {
     // TakePhoto
     const { takePhoto } = usePhotoGallery();
+
+
+    //Menu 
+    const openMenu = ()=> {
+      console.log('open Menu');
+     menuController.enable(true, 'custom');
+      menuController.open('custom');
+      
+    }
 
     //Firebase auth
 
@@ -196,6 +243,7 @@ export default defineComponent({
 
     const userAvatar = ref(null);
       
+
 
     const printUserInfo = () => {
       // console.log(googleAuth());
@@ -428,7 +476,9 @@ export default defineComponent({
       openPicker,
       selectedLang,
       printUserInfo,
-      userAvatar
+      userAvatar,
+      openMenu,
+     
     };
   }
 });
