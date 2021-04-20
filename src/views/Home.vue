@@ -64,7 +64,9 @@
       </ion-fab>
 
       <!-- <ion-button @click="printUserInfo">printUserInfo</ion-button>-->
+
       <!--  Container -->
+      <ion-button @click="writeToFire">Write to FireStore</ion-button>
 
       <div id="container">
         <strong v-if="!toogleImg"
@@ -134,6 +136,8 @@
                   v-model="translatedText"
                   auto-grow
                 ></ion-textarea>
+                <ion-button @click="blabla">Save</ion-button>
+                <ion-button @click="retriveFirestore">Retrive data</ion-button>
               </ion-card-content>
             </ion-card>
           </ion-col>
@@ -245,6 +249,8 @@ export default defineComponent({
 
     const userEmail = ref(null);
 
+    const userUid = ref(null);
+
     ///Auth
     onMounted(() => {
       firebase.auth().onAuthStateChanged(function(user) {
@@ -255,6 +261,7 @@ export default defineComponent({
           userName.value = user.displayName;
           userAvatar.value = user.photoURL;
           userEmail.value = user.email;
+          userUid.value = user.uid;
           if (userAvatar.value == null) {
             userAvatar.value = "../assets/avatar.svg";
             console.log("userAvatar.value == null");
@@ -267,6 +274,48 @@ export default defineComponent({
       });
     });
 
+    ///Write to fireStore
+    const writeToFire = () => {
+      alert(userUid.value);
+      firebase
+        .firestore()
+        .collection(userUid.value)
+        .add({
+          first: "Ada",
+          last: "Lovelace",
+          born: 1815
+        })
+        .then(docRef => {
+          console.log("Document written with ID: ", docRef.id);
+        })
+        .catch(error => {
+          console.error("Error adding document: ", error);
+        });
+    };
+
+    const blabla = () => {
+      alert(RSLT.value);
+      // Add a new document in collection "cities"
+      firebase
+        .firestore()
+        .collection(userUid.value)
+        .doc()
+        .set({
+          imagePath: "Los Angeles",
+          ocrText: RSLT.value,
+          translatedText: translatedText.value
+        })
+        .then(e => {
+          console.log("Document successfully written!", e);
+        })
+        .catch(error => {
+          console.error("Error writing document: ", error);
+        });
+    };
+
+    const retriveFirestore = () => {
+      alert("retrive");
+    };
     //SignOut
 
     const signOut = () => {
@@ -515,7 +564,10 @@ export default defineComponent({
       signOut,
       history,
       closeMenu,
-      userEmail
+      userEmail,
+      writeToFire,
+      blabla,
+      retriveFirestore
     };
   }
 });
