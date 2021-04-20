@@ -24,7 +24,7 @@
       <ion-list>
         
         <ion-item>Translation History</ion-item>
-        <ion-item>Sign Out</ion-item>
+        <ion-item @click="signOut">Sign Out</ion-item>
       </ion-list>
     </ion-content>
   </ion-menu>
@@ -175,8 +175,10 @@ import {
   ref,
   watch,
   watchEffect,
-  onMounted
+  onMounted,
 } from "vue";
+
+import { useRouter } from 'vue-router'
 
 import { add, camera, trash, close, copy } from "ionicons/icons";
 
@@ -223,6 +225,8 @@ export default defineComponent({
     // TakePhoto
     const { takePhoto } = usePhotoGallery();
 
+    const router = useRouter()
+
     //Firebase auth
 
     const user = ref(null);
@@ -247,6 +251,13 @@ export default defineComponent({
         }
       });
     });
+
+    //SignOut
+
+    const signOut = ()=>{
+      firebase.auth().signOut()
+     router.push({ path: 'login' })
+    }
 
     //Menu 
     const openMenu = ()=> {
@@ -477,6 +488,7 @@ export default defineComponent({
       userName,
       userAvatar,
       openMenu,
+      signOut
      
     };
   }
