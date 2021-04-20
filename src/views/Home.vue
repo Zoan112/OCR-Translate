@@ -4,10 +4,10 @@
       <ion-toolbar>
         <ion-title>OCR-Translate</ion-title>
 
-        <ion-avatar slot="end">
+        <!--  <ion-avatar slot="end">
           <img class="userAvatar" @click="openMenu" :src="userAvatar" />
         </ion-avatar>
-
+-->
         <ion-icon
           class="hamburgerMenu"
           @click="openMenu"
@@ -26,17 +26,18 @@
       content-id="content"
     >
       <ion-header>
-        <ion-toolbar color="primary">
+        <ion-toolbar class="menuTitles" color="primary">
           <ion-title>{{ userName }}</ion-title>
+          <p class="userEmail">{{ userEmail }}</p>
           <ion-avatar class="userAvatar" slot="end">
-            <img @click="closeMenu" :src="userAvatar" />
+            <img class="userAvatarImg" @click="closeMenu" :src="userAvatar" />
           </ion-avatar>
         </ion-toolbar>
       </ion-header>
       <ion-content>
         <ion-list>
-          <ion-item @click="history">Translation History</ion-item>
           <ion-item @click="signOut">Sign Out</ion-item>
+          <ion-item @click="history">Saved Translations:</ion-item>
         </ion-list>
       </ion-content>
     </ion-menu>
@@ -242,6 +243,8 @@ export default defineComponent({
 
     const userName = ref(null);
 
+    const userEmail = ref(null);
+
     ///Auth
     onMounted(() => {
       firebase.auth().onAuthStateChanged(function(user) {
@@ -251,6 +254,7 @@ export default defineComponent({
           console.log(user.displayName);
           userName.value = user.displayName;
           userAvatar.value = user.photoURL;
+          userEmail.value = user.email;
           if (userAvatar.value == null) {
             userAvatar.value = "../assets/avatar.svg";
             console.log("userAvatar.value == null");
@@ -510,7 +514,8 @@ export default defineComponent({
       openMenu,
       signOut,
       history,
-      closeMenu
+      closeMenu,
+      userEmail
     };
   }
 });
@@ -565,6 +570,10 @@ ion-card {
   cursor: pointer;
 }
 
+.userAvatarImg {
+  border: 2px solid;
+}
+
 .hamburgerMenu:hover {
   cursor: pointer;
   color: gray;
@@ -578,5 +587,13 @@ ion-item:hover {
   /*--background-hover: red;*/
   --background: #bdc3c7;
   cursor: pointer;
+}
+
+.userEmail {
+  margin: 0px;
+}
+
+.menuTitles {
+  text-align: center;
 }
 </style>
