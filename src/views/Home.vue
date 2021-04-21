@@ -45,7 +45,7 @@
             <ion-item>doc 3534564</ion-item>
 
             <ul v-for="items in savedTranslations">
-              <li>{{ items.id }}</li>
+              <li @click="selectSavedItem(items.id)">{{ items.id }}</li>
             </ul>
           </ion-item-group>
         </ion-list>
@@ -368,6 +368,25 @@ export default defineComponent({
           });
         });
     };
+
+    const selectSavedItem = firestoreId => {
+      alert(firestoreId);
+      console.log(firestoreId);
+      console.log(savedTranslations.value);
+
+      const result = savedTranslations.value.find(
+        ({ id }) => id === firestoreId
+      );
+
+      console.log(result);
+
+      console.log(result.image);
+
+      base.value = result.image;
+      RSLT.value = result.ocrText;
+      translatedText.value = result.translatedText;
+    };
+
     //SignOut
 
     const signOut = () => {
@@ -615,14 +634,14 @@ export default defineComponent({
       userAvatar,
       openMenu,
       signOut,
-
       closeMenu,
       userEmail,
       writeToFire,
       blabla,
       retriveFirestore,
       savedTranslations,
-      consoleSaved
+      consoleSaved,
+      selectSavedItem
     };
   }
 });
