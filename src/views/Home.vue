@@ -37,7 +37,17 @@
       <ion-content>
         <ion-list>
           <ion-item @click="signOut">Sign Out</ion-item>
-          <ion-item @click="history">Saved Translations:</ion-item>
+          <ion-item-group>
+            <ion-item-divider color="">
+              <ion-label>Saved Translations:</ion-label>
+            </ion-item-divider>
+
+            <ion-item>doc 3534564</ion-item>
+
+            <ul v-for="items in savedTranslations">
+              <li>{{ items.id }}</li>
+            </ul>
+          </ion-item-group>
         </ion-list>
       </ion-content>
     </ion-menu>
@@ -67,6 +77,7 @@
 
       <!--  Container -->
       <ion-button @click="writeToFire">Write to FireStore</ion-button>
+      <ion-button @click="consoleSaved">log saved</ion-button>
 
       <div id="container">
         <strong v-if="!toogleImg"
@@ -177,7 +188,10 @@ import {
   menuController,
   IonMenu,
   IonItem,
-  IonList
+  IonList,
+  IonItemGroup,
+  IonLabel,
+  IonItemDivider
 } from "@ionic/vue";
 
 import {
@@ -230,7 +244,10 @@ export default defineComponent({
     IonAvatar,
     IonMenu,
     IonItem,
-    IonList
+    IonList,
+    IonItemGroup,
+    IonLabel,
+    IonItemDivider
   },
   setup() {
     // TakePhoto
@@ -251,6 +268,7 @@ export default defineComponent({
 
     const userUid = ref(null);
 
+    const savedTranslations = ref([]);
     ///Auth
     onMounted(() => {
       firebase.auth().onAuthStateChanged(function(user) {
@@ -272,7 +290,27 @@ export default defineComponent({
           console.log("not lodged", user);
         }
       });
+
+      firebase
+        .firestore()
+        .collection("6z1s38PBv8OkrE2lkO3gu1unAzr2")
+        .get()
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            // doc.data() is never undefined for query doc snapshots
+            const data = {
+              id: doc.id,
+              image: doc.data().imageBase64,
+              ocrText: doc.data().ocrText,
+              translatedText: doc.data().translatedText
+            };
+            savedTranslations.value.push(data);
+            console.log(doc.id, " => ", doc.data());
+          });
+        });
     });
+
+    ///stored translations
 
     ///Write to fireStore
     const writeToFire = () => {
@@ -301,7 +339,7 @@ export default defineComponent({
         .collection(userUid.value)
         .doc()
         .set({
-          imagePath: "Los Angeles",
+          imageBase64: base.value,
           ocrText: RSLT.value,
           translatedText: translatedText.value
         })
@@ -314,7 +352,21 @@ export default defineComponent({
     };
 
     const retriveFirestore = () => {
-      alert("retrive");
+      firebase
+        .firestore()
+        .collection("6z1s38PBv8OkrE2lkO3gu1unAzr2")
+        .get()
+        .then(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            // doc.data() is never undefined for query doc snapshots
+            const data = {
+              id: doc.id,
+              data: doc.data
+            };
+            savedTranslations.value.push("data");
+            console.log(doc.id, " => ", doc.data());
+          });
+        });
     };
     //SignOut
 
@@ -335,9 +387,6 @@ export default defineComponent({
     };
 
     //History
-    const history = () => {
-      alert("work in progress. please try again later.");
-    };
 
     const printUserInfo = () => {
       // console.log(googleAuth());
@@ -377,6 +426,10 @@ export default defineComponent({
         });
     };
 
+    const consoleSaved = () => {
+      alert(savedTranslations.value);
+      console.log(savedTranslations.value);
+    };
     //Send text reasults to google functions
     const processTranslate = () => {
       // googleFunc.useEmulator("localhost", 5001);
@@ -562,12 +615,14 @@ export default defineComponent({
       userAvatar,
       openMenu,
       signOut,
-      history,
+
       closeMenu,
       userEmail,
       writeToFire,
       blabla,
-      retriveFirestore
+      retriveFirestore,
+      savedTranslations,
+      consoleSaved
     };
   }
 });
