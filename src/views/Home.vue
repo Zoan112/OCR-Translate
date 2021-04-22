@@ -4,10 +4,6 @@
       <ion-toolbar>
         <ion-title>OCR-Translate</ion-title>
 
-        <!--  <ion-avatar slot="end">
-          <img class="userAvatar" @click="openMenu" :src="userAvatar" />
-        </ion-avatar>
--->
         <ion-icon
           class="hamburgerMenu"
           @click="openMenu"
@@ -43,9 +39,16 @@
             </ion-item-divider>
 
             <span v-for="items in savedTranslations">
-              <ion-item @click="selectSavedItem(items.id)">{{
-                items.id
-              }}</ion-item>
+              <ion-item @click.self="selectSavedItem(items.id)"
+                >{{ items.id }}
+                <ion-button
+                  @click.self="deleteDoc(items.id)"
+                  slot="end"
+                  fill="outline"
+                >
+                  <ion-icon :name="trash" :md="trash" :ios="trash"></ion-icon
+                ></ion-button>
+              </ion-item>
             </span>
           </ion-item-group>
         </ion-list>
@@ -153,9 +156,9 @@
                     :md="bookmark"
                     :ios="bookmark"
                   ></ion-icon>
-                  Save translation</ion-button
+                  &#160;Save translation</ion-button
                 >
-                <ion-button @click="retriveFirestore">Retrive data</ion-button>
+                <!-- <ion-button @click="retriveFirestore">Retrive data</ion-button>-->
               </ion-card-content>
             </ion-card>
           </ion-col>
@@ -271,6 +274,7 @@ export default defineComponent({
       base.value = "";
       RSLT.value = "";
       translatedText.value = "";
+      showAfterTranslate.value = false;
 
       takePhoto();
     };
@@ -441,6 +445,23 @@ export default defineComponent({
       translatedText.value = result.translatedText;
     };
 
+    const deleteDoc = firestoreId => {
+      console.log(firestoreId);
+      alert("delete doc pressed");
+      savedTranslations.value = [];
+
+      firebase
+        .firestore()
+        .collection(userUid.value)
+        .doc(firestoreId)
+        .delete()
+        .then(() => {
+          console.log("Document successfully deleted!");
+        })
+        .catch(error => {
+          console.error("Error removing document: ", error);
+        });
+    };
     //SignOut
 
     const signOut = () => {
@@ -679,6 +700,7 @@ export default defineComponent({
       menu,
       close,
       bookmark,
+      trash,
       // takePhoto,
       imageSrc,
       base,
@@ -705,7 +727,8 @@ export default defineComponent({
       savedTranslations,
       consoleSaved,
       selectSavedItem,
-      newPhoto
+      newPhoto,
+      deleteDoc
     };
   }
 });
