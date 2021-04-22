@@ -42,7 +42,9 @@ firebase.initializeApp({
   messagingSenderId: "326340236602",
   appId: "1:326340236602:web:dc85ff32bcadc31d36ac03"
 });
+let app = "";
 
+/*
 const app = createApp(App)
   .use(IonicVue)
   .use(router);
@@ -50,7 +52,7 @@ const app = createApp(App)
 router.isReady().then(() => {
   app.mount("#app");
 });
-
+*/
 const googleFunc = firebase.functions();
 
 export default googleFunc + firebase;
@@ -58,6 +60,20 @@ console.log("from main", googleFunc);
 console.log("from main firebase auth", firebase.auth());
 console.log("from main firebase auth", firebase.auth().onAuthStateChanged);
 
+firebase.auth().onAuthStateChanged(user => {
+  if (!app) {
+    console.log(user);
+    //  console.log(firebase.auth().currentUser);
+    app = createApp(App)
+      .use(IonicVue)
+      .use(router);
+    router.isReady().then(() => {
+      app.mount("#app");
+    });
+  }
+});
+
+/*
 firebase.auth().onAuthStateChanged(function(user) {
   if (user) {
     // User is signed in.
@@ -68,3 +84,4 @@ firebase.auth().onAuthStateChanged(function(user) {
     console.log("not lodged", user);
   }
 });
+*/

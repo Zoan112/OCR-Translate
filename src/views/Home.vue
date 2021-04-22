@@ -34,17 +34,28 @@
         <ion-list>
           <ion-item @click="signOut">Sign Out</ion-item>
           <ion-item-group>
-            <ion-item-divider color="">
-              <ion-label>Saved Translations:</ion-label>
+            <ion-item-divider size="large" color="">
+              <ion-label class="savedTranslationLabel"
+                ><ion-icon
+                  class="menuBookmark"
+                  size="large"
+                  :name="bookmark"
+                  :md="bookmark"
+                  :ios="bookmark"
+                ></ion-icon>
+                Saved Translations:</ion-label
+              >
             </ion-item-divider>
 
             <span v-for="items in savedTranslations">
-              <ion-item @click.self="selectSavedItem(items.id)"
-                >{{ items.id }}
+              <ion-item @click.self="selectSavedItem(items.id)">
+                <span> &#8226; </span> &#160;{{ items.id }}
+
                 <ion-button
                   @click.self="deleteDoc(items.id)"
                   slot="end"
                   fill="outline"
+                  class="trash"
                 >
                   <ion-icon :name="trash" :md="trash" :ios="trash"></ion-icon
                 ></ion-button>
@@ -223,7 +234,8 @@ import {
   close,
   copy,
   menu,
-  bookmark
+  bookmark,
+  pricetag
 } from "ionicons/icons";
 
 import {
@@ -446,8 +458,6 @@ export default defineComponent({
     };
 
     const deleteDoc = firestoreId => {
-      console.log(firestoreId);
-      alert("delete doc pressed");
       savedTranslations.value = [];
 
       firebase
@@ -457,6 +467,7 @@ export default defineComponent({
         .delete()
         .then(() => {
           console.log("Document successfully deleted!");
+          toastDelete();
         })
         .catch(error => {
           console.error("Error removing document: ", error);
@@ -636,6 +647,17 @@ export default defineComponent({
       await toast.present();
     };
 
+    const toastDelete = async () => {
+      const toast = await toastController.create({
+        color: "secondary",
+        duration: 2000,
+        message: "Successfully deleted!",
+        showCloseButton: true
+      });
+
+      await toast.present();
+    };
+
     ////PICKER
 
     const selectedLang = ref("Hebrew");
@@ -728,7 +750,8 @@ export default defineComponent({
       consoleSaved,
       selectSavedItem,
       newPhoto,
-      deleteDoc
+      deleteDoc,
+      pricetag
     };
   }
 });
@@ -808,5 +831,19 @@ ion-item:hover {
 
 .menuTitles {
   text-align: center;
+}
+
+.trash {
+  --background-hover: #3880ff;
+  --background-hover-opacity: 0.5;
+  --color-hover: white;
+}
+
+.menuBookmark {
+  vertical-align: middle;
+}
+
+.savedTranslationLabel {
+  font-size: 1.5em;
 }
 </style>
