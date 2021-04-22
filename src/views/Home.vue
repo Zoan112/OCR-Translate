@@ -42,11 +42,11 @@
               <ion-label>Saved Translations:</ion-label>
             </ion-item-divider>
 
-            <ion-item>doc 3534564</ion-item>
-
-            <ul v-for="items in savedTranslations">
-              <li @click="selectSavedItem(items.id)">{{ items.id }}</li>
-            </ul>
+            <span v-for="items in savedTranslations">
+              <ion-item @click="selectSavedItem(items.id)">{{
+                items.id
+              }}</ion-item>
+            </span>
           </ion-item-group>
         </ion-list>
       </ion-content>
@@ -67,7 +67,7 @@
         </ion-fab-button>
 
         <ion-fab-list side="top">
-          <ion-fab-button @click="takePhoto()"
+          <ion-fab-button @click="newPhoto"
             ><ion-icon :icon="camera" :md="camera"></ion-icon
           ></ion-fab-button>
         </ion-fab-list>
@@ -76,8 +76,8 @@
       <!-- <ion-button @click="printUserInfo">printUserInfo</ion-button>-->
 
       <!--  Container -->
-      <ion-button @click="writeToFire">Write to FireStore</ion-button>
-      <ion-button @click="consoleSaved">log saved</ion-button>
+      <!--<ion-button @click="writeToFire">Write to FireStore</ion-button>
+      <ion-button @click="consoleSaved">log saved</ion-button>-->
 
       <div id="container">
         <strong v-if="!toogleImg"
@@ -147,7 +147,14 @@
                   v-model="translatedText"
                   auto-grow
                 ></ion-textarea>
-                <ion-button @click="blabla">Save</ion-button>
+                <ion-button @click="blabla" color="success"
+                  ><ion-icon
+                    :name="bookmark"
+                    :md="bookmark"
+                    :ios="bookmark"
+                  ></ion-icon>
+                  Save translation</ion-button
+                >
                 <ion-button @click="retriveFirestore">Retrive data</ion-button>
               </ion-card-content>
             </ion-card>
@@ -206,7 +213,15 @@ import {
 
 import { useRouter } from "vue-router";
 
-import { add, camera, trash, close, copy, menu } from "ionicons/icons";
+import {
+  add,
+  camera,
+  trash,
+  close,
+  copy,
+  menu,
+  bookmark
+} from "ionicons/icons";
 
 import {
   usePhotoGallery,
@@ -251,6 +266,15 @@ export default defineComponent({
   },
   setup() {
     // TakePhoto
+
+    const newPhoto = () => {
+      base.value = "";
+      RSLT.value = "";
+      translatedText.value = "";
+
+      takePhoto();
+    };
+
     const { takePhoto } = usePhotoGallery();
 
     const router = useRouter();
@@ -280,6 +304,7 @@ export default defineComponent({
           userAvatar.value = user.photoURL;
           userEmail.value = user.email;
           userUid.value = user.uid;
+          retriveFirestore();
           if (userAvatar.value == null) {
             userAvatar.value = "../assets/avatar.svg";
             console.log("userAvatar.value == null");
@@ -290,10 +315,10 @@ export default defineComponent({
           console.log("not lodged", user);
         }
       });
-
+      /*
       firebase
         .firestore()
-        .collection("6z1s38PBv8OkrE2lkO3gu1unAzr2")
+        .collection(userUid.value)
         .get()
         .then(querySnapshot => {
           querySnapshot.forEach(doc => {
@@ -307,7 +332,7 @@ export default defineComponent({
             savedTranslations.value.push(data);
             console.log(doc.id, " => ", doc.data());
           });
-        });
+        });*/
     });
 
     ///stored translations
@@ -332,7 +357,10 @@ export default defineComponent({
     };
 
     const blabla = () => {
-      alert(RSLT.value);
+      presentLoading();
+
+      //Clear array before FireStore write and then firestore retrive
+      savedTranslations.value = [];
       // Add a new document in collection "cities"
       firebase
         .firestore()
@@ -343,34 +371,60 @@ export default defineComponent({
           ocrText: RSLT.value,
           translatedText: translatedText.value
         })
-        .then(e => {
-          console.log("Document successfully written!", e);
+        .then(() => {
+          closeLoading();
+          console.log("Document successfully written!");
+          toast();
+        })
+        .then(() => {
+          //  alert("Translation saved successfully!");
         })
         .catch(error => {
           console.error("Error writing document: ", error);
+          closeLoading();
         });
     };
 
     const retriveFirestore = () => {
-      firebase
+      /* firebase
         .firestore()
-        .collection("6z1s38PBv8OkrE2lkO3gu1unAzr2")
+        .collection(userUid.value)
         .get()
         .then(querySnapshot => {
           querySnapshot.forEach(doc => {
             // doc.data() is never undefined for query doc snapshots
             const data = {
               id: doc.id,
-              data: doc.data
+              image: doc.data().imageBase64,
+              ocrText: doc.data().ocrText,
+              translatedText: doc.data().translatedText
             };
-            savedTranslations.value.push("data");
+            savedTranslations.value.push(data);
+            console.log(doc.id, " => ", doc.data());
+          });
+        });*/
+      console.log("from retrive");
+      savedTranslations.value = [];
+      firebase
+        .firestore()
+        .collection(userUid.value)
+        .onSnapshot(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            const data = {
+              id: doc.id,
+              image: doc.data().imageBase64,
+              ocrText: doc.data().ocrText,
+              translatedText: doc.data().translatedText
+            };
+            console.log(doc.data());
+            savedTranslations.value.push(data);
             console.log(doc.id, " => ", doc.data());
           });
         });
     };
 
     const selectSavedItem = firestoreId => {
-      alert(firestoreId);
+      // alert(firestoreId);
       console.log(firestoreId);
       console.log(savedTranslations.value);
 
@@ -530,9 +584,6 @@ export default defineComponent({
       }
     });
 
-    //Add translated text to clipboard
-    //getInputElement() => Promise<IonTextarea>
-
     const addToClipboard = () => {
       console.log(translatedText.value);
 
@@ -551,6 +602,17 @@ export default defineComponent({
       }
       // translatedText.value.select()
       //document.execCommand('copy');
+    };
+
+    const toast = async () => {
+      const toast = await toastController.create({
+        color: "success",
+        duration: 2000,
+        message: "Saved successfully!",
+        showCloseButton: true
+      });
+
+      await toast.present();
     };
 
     ////PICKER
@@ -616,7 +678,8 @@ export default defineComponent({
       trash,
       menu,
       close,
-      takePhoto,
+      bookmark,
+      // takePhoto,
       imageSrc,
       base,
       RSLT,
@@ -641,7 +704,8 @@ export default defineComponent({
       retriveFirestore,
       savedTranslations,
       consoleSaved,
-      selectSavedItem
+      selectSavedItem,
+      newPhoto
     };
   }
 });
