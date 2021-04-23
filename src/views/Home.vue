@@ -32,27 +32,43 @@
       </ion-header>
       <ion-content>
         <ion-list>
-          <ion-item @click="signOut">Sign Out</ion-item>
+          <ion-item lines="full" class="signOut" @click="signOut"
+            >Sign Out</ion-item
+          >
+
           <ion-item-group>
             <ion-item-divider size="large" color="">
               <ion-label class="savedTranslationLabel"
                 ><ion-icon
                   class="menuBookmark"
                   size="large"
+                  color="#f7c920"
                   :name="bookmark"
                   :md="bookmark"
                   :ios="bookmark"
-                ></ion-icon>
-                Saved Translations:</ion-label
+                ></ion-icon
+                >Saved:</ion-label
               >
             </ion-item-divider>
-
             <span v-for="items in savedTranslations">
-              <ion-item @click.self="selectSavedItem(items.id)">
-                <span> &#8226; </span> &#160;{{ items.id }}
+              <ion-item
+                class="savedItems"
+                @click.self="selectSavedItem(items.id)"
+              >
+                <span>
+                  <!--&#8226;-->
+                  <ion-icon
+                    size="large"
+                    :name="pricetag"
+                    :md="pricetag"
+                    :ios="pricetag"
+                  ></ion-icon>
+                </span>
+                &#160;{{ items.id }}
 
                 <ion-button
                   @click.self="deleteDoc(items.id)"
+                  size="large"
                   slot="end"
                   fill="outline"
                   class="trash"
@@ -92,7 +108,11 @@
       <!--  Container -->
       <!--<ion-button @click="writeToFire">Write to FireStore</ion-button>
       <ion-button @click="consoleSaved">log saved</ion-button>-->
-
+      <ion-icon
+        :name="pricetag-outline"
+        :md="pricetag-outline"
+        :ios="pricetag-outline"
+      ></ion-icon>
       <div id="container">
         <strong v-if="!toogleImg"
           >Click the <ion-icon icon="add" :md="add"></ion-icon> Button to scan
@@ -235,7 +255,7 @@ import {
   copy,
   menu,
   bookmark,
-  pricetag
+  pricetag,
 } from "ionicons/icons";
 
 import {
@@ -751,7 +771,7 @@ export default defineComponent({
       selectSavedItem,
       newPhoto,
       deleteDoc,
-      pricetag
+      pricetag,
     };
   }
 });
@@ -844,6 +864,21 @@ ion-item:hover {
 }
 
 .savedTranslationLabel {
-  font-size: 1.5em;
+  font-size: 1.2em;
+  color: #f7c920;
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+.savedItems {
+  --inner-padding-end: none;
+}
+
+.signOut {
+  font-size: 1.1em;
+  font-weight: 450;
+  /*--border-color: black;*/
+
+  border-bottom: 2px solid #bdc3c7;
 }
 </style>

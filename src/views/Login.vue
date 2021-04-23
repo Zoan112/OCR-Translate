@@ -8,10 +8,10 @@
     <ion-content>
       <section id="firebaseui-auth-container"></section>
 
-      <p>
+      <!--<p>
         For demo log-in, press sing-up with Email. <br />Credentials:
         <br />Email: ocrtranslate@protonmail.com <br />Password: ocrdemo
-      </p>
+      </p>-->
     </ion-content>
   </ion-page>
 </template>
