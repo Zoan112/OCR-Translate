@@ -133,7 +133,7 @@
               >
 
               <ion-card-content>
-                  <ion-button @click="first">first 10 char</ion-button>
+                  
                 <ion-textarea
                   v-if="showTranslateBtn"
                   v-model="RSLT"
@@ -666,10 +666,7 @@ export default defineComponent({
       //document.execCommand('copy');
     };
 
-    const first = ()=>{
-      alert(RSLT.value.substring(0,8))
-      console.log(RSLT.value.substring(0,15))
-    }
+ 
 
     const toast = async () => {
       const toast = await toastController.create({
@@ -692,7 +689,7 @@ export default defineComponent({
         showCloseButton: true,
        
       });
- console.log(color)
+
       await toast.present();
     };
 
@@ -801,7 +798,7 @@ export default defineComponent({
       newPhoto,
       deleteDoc,
       pricetag,
-      first
+  
     };
   }
 });
