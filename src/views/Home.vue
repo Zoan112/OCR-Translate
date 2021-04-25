@@ -42,7 +42,7 @@
                 ><ion-icon
                   class="menuBookmark"
                   size="large"
-                  color="#f7c920"
+                  
                   :name="bookmark"
                   :md="bookmark"
                   :ios="bookmark"
@@ -82,7 +82,7 @@
       </ion-content>
     </ion-menu>
 
-    <ion-content :fullscreen="false" class="has-header" id="content">
+    <ion-content :fullscreen="false" class="has-header" id="content" style="background-color:#86868630;">
       <!--<ion-header collapse="condense">
         <ion-toolbar>
           <ion-title size="large">WWW</ion-title>
@@ -113,7 +113,10 @@
         :md="pricetag-outline"
         :ios="pricetag-outline"
       ></ion-icon>
-      <div id="container">
+
+    
+      <div id="container" >
+        
         <strong v-if="!toogleImg"
           >Click the <ion-icon icon="add" :md="add"></ion-icon> Button to scan
           document</strong
@@ -130,6 +133,7 @@
               >
 
               <ion-card-content>
+                  <ion-button @click="first">first 10 char</ion-button>
                 <ion-textarea
                   v-if="showTranslateBtn"
                   v-model="RSLT"
@@ -393,7 +397,12 @@ export default defineComponent({
     };
 
     const blabla = () => {
-      presentLoading();
+      
+      if (RSLT.value == ''){
+         globalToast("danger", 'Not Saved! No text found, please try again. ');
+      
+      }else{
+        presentLoading();
 
       //Clear array before FireStore write and then firestore retrive
       savedTranslations.value = [];
@@ -401,7 +410,7 @@ export default defineComponent({
       firebase
         .firestore()
         .collection(userUid.value)
-        .doc()
+        .doc(RSLT.value.substring(0,15))
         .set({
           imageBase64: base.value,
           ocrText: RSLT.value,
@@ -419,6 +428,7 @@ export default defineComponent({
           console.error("Error writing document: ", error);
           closeLoading();
         });
+        }
     };
 
     const retriveFirestore = () => {
@@ -656,6 +666,11 @@ export default defineComponent({
       //document.execCommand('copy');
     };
 
+    const first = ()=>{
+      alert(RSLT.value.substring(0,8))
+      console.log(RSLT.value.substring(0,15))
+    }
+
     const toast = async () => {
       const toast = await toastController.create({
         color: "success",
@@ -664,6 +679,20 @@ export default defineComponent({
         showCloseButton: true
       });
 
+      await toast.present();
+    };
+
+        const globalToast = async (color, message) => {
+          
+
+      const toast = await toastController.create({
+        color: color,
+        duration: 2000,
+        message: message,
+        showCloseButton: true,
+       
+      });
+ console.log(color)
       await toast.present();
     };
 
@@ -772,6 +801,7 @@ export default defineComponent({
       newPhoto,
       deleteDoc,
       pricetag,
+      first
     };
   }
 });
@@ -861,11 +891,13 @@ ion-item:hover {
 
 .menuBookmark {
   vertical-align: middle;
+  color: #f7c920;
+ 
 }
 
 .savedTranslationLabel {
   font-size: 1.2em;
-  color: #f7c920;
+  
   text-decoration: underline;
   font-weight: 500;
 }
@@ -880,5 +912,10 @@ ion-item:hover {
   /*--border-color: black;*/
 
   border-bottom: 2px solid #bdc3c7;
+}
+
+.has-header{
+
+   --background: #86868630;
 }
 </style>
