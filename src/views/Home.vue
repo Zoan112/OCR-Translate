@@ -13,6 +13,7 @@
         ></ion-icon>
       </ion-toolbar>
     </ion-header>
+
     <!--Menu-->
 
     <ion-menu
@@ -21,6 +22,7 @@
       class="my-custom-menu"
       content-id="content"
     >
+      <!-- Header Menu-->
       <ion-header>
         <ion-toolbar class="menuTitles" color="primary">
           <ion-title>{{ userName }}</ion-title>
@@ -32,6 +34,7 @@
       </ion-header>
       <ion-content>
         <ion-list>
+          <!--Sign out-->
           <ion-item lines="full" class="signOut" @click="signOut"
             >Sign Out</ion-item
           >
@@ -42,7 +45,6 @@
                 ><ion-icon
                   class="menuBookmark"
                   size="large"
-                  
                   :name="bookmark"
                   :md="bookmark"
                   :ios="bookmark"
@@ -50,13 +52,15 @@
                 >Saved:</ion-label
               >
             </ion-item-divider>
+
+            <!--Saved items-->
+
             <span v-for="items in savedTranslations">
               <ion-item
                 class="savedItems"
                 @click.self="selectSavedItem(items.id)"
               >
                 <span>
-                  <!--&#8226;-->
                   <ion-icon
                     size="large"
                     :name="pricetag"
@@ -65,7 +69,7 @@
                   ></ion-icon>
                 </span>
                 &#160;{{ items.id }}
-
+                <!--Delete Item-->
                 <ion-button
                   @click.self="deleteDoc(items.id)"
                   size="large"
@@ -82,7 +86,12 @@
       </ion-content>
     </ion-menu>
 
-    <ion-content :fullscreen="false" class="has-header" id="content" style="background-color:#86868630;">
+    <ion-content
+      :fullscreen="false"
+      class="has-header"
+      id="content"
+      style="background-color:#86868630;"
+    >
       <!--<ion-header collapse="condense">
         <ion-toolbar>
           <ion-title size="large">WWW</ion-title>
@@ -106,17 +115,14 @@
       <!-- <ion-button @click="printUserInfo">printUserInfo</ion-button>-->
 
       <!--  Container -->
-      <!--<ion-button @click="writeToFire">Write to FireStore</ion-button>
-      <ion-button @click="consoleSaved">log saved</ion-button>-->
+
       <ion-icon
-        :name="pricetag-outline"
-        :md="pricetag-outline"
-        :ios="pricetag-outline"
+        :name="pricetag - outline"
+        :md="pricetag - outline"
+        :ios="pricetag - outline"
       ></ion-icon>
 
-    
-      <div id="container" >
-        
+      <div id="container">
         <strong v-if="!toogleImg"
           >Click the <ion-icon icon="add" :md="add"></ion-icon> Button to scan
           document</strong
@@ -133,7 +139,8 @@
               >
 
               <ion-card-content>
-                  
+                <ion-button @click="checkIf">check if exist</ion-button>
+
                 <ion-textarea
                   v-if="showTranslateBtn"
                   v-model="RSLT"
@@ -259,7 +266,7 @@ import {
   copy,
   menu,
   bookmark,
-  pricetag,
+  pricetag
 } from "ionicons/icons";
 
 import {
@@ -355,6 +362,7 @@ export default defineComponent({
           console.log("not lodged", user);
         }
       });
+
       /*
       firebase
         .firestore()
@@ -378,6 +386,17 @@ export default defineComponent({
     ///stored translations
 
     ///Write to fireStore
+
+    const checkIf = () => {
+      alert("wdfw");
+      const result = savedTranslations.value.find(
+        ({ id }) => id === RSLT.value.substring(0, 15)
+      );
+
+      if (RSLT.value.substring(0, 15) == result.id) {
+        alert("exists");
+      }
+    };
     const writeToFire = () => {
       alert(userUid.value);
       firebase
@@ -395,17 +414,79 @@ export default defineComponent({
           console.error("Error adding document: ", error);
         });
     };
+    const docExist = ref(false);
 
     const blabla = () => {
-      
+      //Check if file exist in array by taking first 15 charcthers and compering them to array.
+      let checkIfExists = savedTranslations.value.find(
+        ({ id }) => id == RSLT.value.substring(0, 15)
+      );
+
+      console.log(checkIfExists);
+
+      // console.log("checkIfexists:",checkIfExists);
+
+      if (RSLT.value == "") {
+        globalToast("danger", "Not Saved! No text found, please try again. ");
+      } else if (typeof checkIfExists !== "undefined") {
+        if (RSLT.value.substring(0, 15) == checkIfExists.id) {
+          globalToast("warning", "Document already exists!");
+        }
+      } else {
+        savedTranslations.value = [];
+
+        presentLoading();
+
+        //Clear array before FireStore write and then firestore retrive
+
+        // Add a new document in collection "cities"
+        firebase
+          .firestore()
+          .collection(userUid.value)
+          .doc(RSLT.value.substring(0, 15))
+          .set({
+            imageBase64: base.value,
+            ocrText: RSLT.value,
+            translatedText: translatedText.value
+          })
+          .then(() => {
+            closeLoading();
+            console.log("Document successfully written!");
+            toast();
+          })
+          .then(() => {
+            //  alert("Translation saved successfully!");
+          })
+          .catch(error => {
+            console.error("Error writing document: ", error);
+            closeLoading();
+          });
+      }
+    };
+
+    /*
+                  const checkIfExists = savedTranslations.value.find(
+        ({ id }) => id === RSLT.value.substring(0,15)
+      );
+
+if (RSLT.value.substring(0,15) == checkIfExists.id){
+          alert('exists')
+      };
+
+      ///////////////////////////////
+
+       console.warn('clear')
+
       if (RSLT.value == ''){
          globalToast("danger", 'Not Saved! No text found, please try again. ');
-      
-      }else{
+
+      }else if(RSLT.value !== ''){
+          savedTranslations.value = [];
+
         presentLoading();
 
       //Clear array before FireStore write and then firestore retrive
-      savedTranslations.value = [];
+
       // Add a new document in collection "cities"
       firebase
         .firestore()
@@ -428,8 +509,8 @@ export default defineComponent({
           console.error("Error writing document: ", error);
           closeLoading();
         });
-        }
-    };
+        }*/
+    // };
 
     const retriveFirestore = () => {
       /* firebase
@@ -451,6 +532,7 @@ export default defineComponent({
         });*/
       console.log("from retrive");
       savedTranslations.value = [];
+
       firebase
         .firestore()
         .collection(userUid.value)
@@ -666,8 +748,6 @@ export default defineComponent({
       //document.execCommand('copy');
     };
 
- 
-
     const toast = async () => {
       const toast = await toastController.create({
         color: "success",
@@ -679,15 +759,12 @@ export default defineComponent({
       await toast.present();
     };
 
-        const globalToast = async (color, message) => {
-          
-
+    const globalToast = async (color, message) => {
       const toast = await toastController.create({
         color: color,
         duration: 2000,
         message: message,
-        showCloseButton: true,
-       
+        showCloseButton: true
       });
 
       await toast.present();
@@ -798,7 +875,7 @@ export default defineComponent({
       newPhoto,
       deleteDoc,
       pricetag,
-  
+      checkIf
     };
   }
 });
@@ -889,12 +966,11 @@ ion-item:hover {
 .menuBookmark {
   vertical-align: middle;
   color: #f7c920;
- 
 }
 
 .savedTranslationLabel {
   font-size: 1.2em;
-  
+
   text-decoration: underline;
   font-weight: 500;
 }
@@ -911,8 +987,7 @@ ion-item:hover {
   border-bottom: 2px solid #bdc3c7;
 }
 
-.has-header{
-
-   --background: #86868630;
+.has-header {
+  --background: #86868630;
 }
 </style>
