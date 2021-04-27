@@ -36,7 +36,7 @@ import firebaseui from "firebaseui";
 
 firebase.initializeApp({
   apiKey: "AIzaSyAraqP78ELsXF2ckhG0WfeJd0DUT_aI9pg",
-  authDomain: "fir-functions-8307b.firebaseapp.com",
+  authDomain: "translate.zohar-hadari.com",
   projectId: "fir-functions-8307b",
   storageBucket: "fir-functions-8307b.appspot.com",
   messagingSenderId: "326340236602",

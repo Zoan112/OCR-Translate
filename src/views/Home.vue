@@ -139,8 +139,6 @@
               >
 
               <ion-card-content>
-                <ion-button @click="checkIf">check if exist</ion-button>
-
                 <ion-textarea
                   v-if="showTranslateBtn"
                   v-model="RSLT"
@@ -387,35 +385,6 @@ export default defineComponent({
 
     ///Write to fireStore
 
-    const checkIf = () => {
-      alert("wdfw");
-      const result = savedTranslations.value.find(
-        ({ id }) => id === RSLT.value.substring(0, 15)
-      );
-
-      if (RSLT.value.substring(0, 15) == result.id) {
-        alert("exists");
-      }
-    };
-    const writeToFire = () => {
-      alert(userUid.value);
-      firebase
-        .firestore()
-        .collection(userUid.value)
-        .add({
-          first: "Ada",
-          last: "Lovelace",
-          born: 1815
-        })
-        .then(docRef => {
-          console.log("Document written with ID: ", docRef.id);
-        })
-        .catch(error => {
-          console.error("Error adding document: ", error);
-        });
-    };
-    const docExist = ref(false);
-
     const blabla = () => {
       //Check if file exist in array by taking first 15 charcthers and compering them to array.
       let checkIfExists = savedTranslations.value.find(
@@ -432,7 +401,7 @@ export default defineComponent({
         if (RSLT.value.substring(0, 15) == checkIfExists.id) {
           globalToast("warning", "Document already exists!");
         }
-      } else {
+      } else if (typeof checkIfExists == "undefined") {
         savedTranslations.value = [];
 
         presentLoading();
@@ -866,7 +835,6 @@ if (RSLT.value.substring(0,15) == checkIfExists.id){
       signOut,
       closeMenu,
       userEmail,
-      writeToFire,
       blabla,
       retriveFirestore,
       savedTranslations,
@@ -874,8 +842,7 @@ if (RSLT.value.substring(0,15) == checkIfExists.id){
       selectSavedItem,
       newPhoto,
       deleteDoc,
-      pricetag,
-      checkIf
+      pricetag
     };
   }
 });
