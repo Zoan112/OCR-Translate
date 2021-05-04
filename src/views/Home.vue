@@ -112,8 +112,6 @@
         </ion-fab-list>
       </ion-fab>
 
-      <!-- <ion-button @click="printUserInfo">printUserInfo</ion-button>-->
-
       <!--  Container -->
 
       <ion-icon
@@ -190,7 +188,7 @@
                   v-model="translatedText"
                   auto-grow
                 ></ion-textarea>
-                <ion-button @click="blabla" color="success"
+                <ion-button @click="saveFirestore" color="success"
                   ><ion-icon
                     :name="bookmark"
                     :md="bookmark"
@@ -198,7 +196,6 @@
                   ></ion-icon>
                   &#160;Save translation</ion-button
                 >
-                <!-- <ion-button @click="retriveFirestore">Retrive data</ion-button>-->
               </ion-card-content>
             </ion-card>
           </ion-col>
@@ -309,6 +306,14 @@ export default defineComponent({
     IonItemDivider
   },
   setup() {
+    const { takePhoto } = usePhotoGallery();
+    const router = useRouter();
+
+    const RSLT = ref();
+    const translatedText = ref();
+
+    const showTranslateBtn = ref(false);
+
     // TakePhoto
 
     const newPhoto = () => {
@@ -320,24 +325,20 @@ export default defineComponent({
       takePhoto();
     };
 
-    const { takePhoto } = usePhotoGallery();
-
-    const router = useRouter();
-
-    //Firebase auth
+    //Firebase auth var declair
 
     const user = ref(null);
-
     const userAvatar = ref(null);
-    userAvatar.value = "../assets/avatar.svg";
-
     const userName = ref(null);
-
     const userEmail = ref(null);
-
     const userUid = ref(null);
 
+    //Default user avatar. (if user as no avatar)
+    userAvatar.value = "../assets/avatar.svg";
+
+    ///Stored transaltion
     const savedTranslations = ref([]);
+
     ///Auth
     onMounted(() => {
       firebase.auth().onAuthStateChanged(function(user) {
@@ -360,32 +361,11 @@ export default defineComponent({
           console.log("not lodged", user);
         }
       });
-
-      /*
-      firebase
-        .firestore()
-        .collection(userUid.value)
-        .get()
-        .then(querySnapshot => {
-          querySnapshot.forEach(doc => {
-            // doc.data() is never undefined for query doc snapshots
-            const data = {
-              id: doc.id,
-              image: doc.data().imageBase64,
-              ocrText: doc.data().ocrText,
-              translatedText: doc.data().translatedText
-            };
-            savedTranslations.value.push(data);
-            console.log(doc.id, " => ", doc.data());
-          });
-        });*/
     });
-
-    ///stored translations
 
     ///Write to fireStore
 
-    const blabla = () => {
+    const saveFirestore = () => {
       //Check if file exist in array by taking first 15 charcthers and compering them to array.
       let checkIfExists = savedTranslations.value.find(
         ({ id }) => id == RSLT.value.substring(0, 15)
@@ -399,7 +379,7 @@ export default defineComponent({
         globalToast("danger", "Not Saved! No text found, please try again. ");
       } else if (typeof checkIfExists !== "undefined") {
         if (RSLT.value.substring(0, 15) == checkIfExists.id) {
-          globalToast("warning", "Document already exists!");
+          globalToast("warning", "Document name already exists!");
         }
       } else if (typeof checkIfExists == "undefined") {
         savedTranslations.value = [];
@@ -433,72 +413,7 @@ export default defineComponent({
       }
     };
 
-    /*
-                  const checkIfExists = savedTranslations.value.find(
-        ({ id }) => id === RSLT.value.substring(0,15)
-      );
-
-if (RSLT.value.substring(0,15) == checkIfExists.id){
-          alert('exists')
-      };
-
-      ///////////////////////////////
-
-       console.warn('clear')
-
-      if (RSLT.value == ''){
-         globalToast("danger", 'Not Saved! No text found, please try again. ');
-
-      }else if(RSLT.value !== ''){
-          savedTranslations.value = [];
-
-        presentLoading();
-
-      //Clear array before FireStore write and then firestore retrive
-
-      // Add a new document in collection "cities"
-      firebase
-        .firestore()
-        .collection(userUid.value)
-        .doc(RSLT.value.substring(0,15))
-        .set({
-          imageBase64: base.value,
-          ocrText: RSLT.value,
-          translatedText: translatedText.value
-        })
-        .then(() => {
-          closeLoading();
-          console.log("Document successfully written!");
-          toast();
-        })
-        .then(() => {
-          //  alert("Translation saved successfully!");
-        })
-        .catch(error => {
-          console.error("Error writing document: ", error);
-          closeLoading();
-        });
-        }*/
-    // };
-
     const retriveFirestore = () => {
-      /* firebase
-        .firestore()
-        .collection(userUid.value)
-        .get()
-        .then(querySnapshot => {
-          querySnapshot.forEach(doc => {
-            // doc.data() is never undefined for query doc snapshots
-            const data = {
-              id: doc.id,
-              image: doc.data().imageBase64,
-              ocrText: doc.data().ocrText,
-              translatedText: doc.data().translatedText
-            };
-            savedTranslations.value.push(data);
-            console.log(doc.id, " => ", doc.data());
-          });
-        });*/
       console.log("from retrive");
       savedTranslations.value = [];
 
@@ -520,8 +435,9 @@ if (RSLT.value.substring(0,15) == checkIfExists.id){
         });
     };
 
+    // Select saved item
+
     const selectSavedItem = firestoreId => {
-      // alert(firestoreId);
       console.log(firestoreId);
       console.log(savedTranslations.value);
 
@@ -538,6 +454,7 @@ if (RSLT.value.substring(0,15) == checkIfExists.id){
       translatedText.value = result.translatedText;
     };
 
+    //Delete Item
     const deleteDoc = firestoreId => {
       savedTranslations.value = [];
 
@@ -554,8 +471,8 @@ if (RSLT.value.substring(0,15) == checkIfExists.id){
           console.error("Error removing document: ", error);
         });
     };
-    //SignOut
 
+    //SignOut
     const signOut = () => {
       firebase.auth().signOut();
       router.push({ path: "login" });
@@ -575,9 +492,6 @@ if (RSLT.value.substring(0,15) == checkIfExists.id){
     //History
 
     const printUserInfo = () => {
-      // console.log(googleAuth());
-      //   console.log(firebase.auth());
-
       console.log(userAvatar);
 
       firebase.auth().onAuthStateChanged(function(user) {
@@ -592,9 +506,10 @@ if (RSLT.value.substring(0,15) == checkIfExists.id){
       });
     };
 
-    //Send base Img to google functions
+    //Send base64 Img to google functions
     const processOcr = () => {
       // googleFunc.useEmulator("localhost", 5001);
+
       presentLoading();
       var baseFire = base.value;
 
@@ -612,11 +527,7 @@ if (RSLT.value.substring(0,15) == checkIfExists.id){
         });
     };
 
-    const consoleSaved = () => {
-      alert(savedTranslations.value);
-      console.log(savedTranslations.value);
-    };
-    //Send text reasults to google functions
+    //Send text results to google functions
     const processTranslate = () => {
       // googleFunc.useEmulator("localhost", 5001);
       presentLoading();
@@ -641,9 +552,6 @@ if (RSLT.value.substring(0,15) == checkIfExists.id){
         });
     };
 
-    const RSLT = ref();
-    const translatedText = ref();
-
     /* Conditional element rendering*/
 
     let toogleImg = ref(false);
@@ -664,8 +572,6 @@ if (RSLT.value.substring(0,15) == checkIfExists.id){
 
     /*load control*/
 
-    const showLoad = ref("true");
-
     const presentLoading = async () => {
       const loading = await loadingController.create({
         cssClass: "my-custom-class",
@@ -676,7 +582,7 @@ if (RSLT.value.substring(0,15) == checkIfExists.id){
       await loading.present();
     };
 
-    const showTranslateBtn = ref(false);
+    ///Conditonal rendering translate button
 
     watch(RSLT, () => {
       if (RSLT.value === "") {
@@ -697,9 +603,9 @@ if (RSLT.value.substring(0,15) == checkIfExists.id){
       }
     });
 
+    //Add translation to clipboard
     const addToClipboard = () => {
       console.log(translatedText.value);
-
       navigator.clipboard.writeText(translatedText.value);
 
       handleButtonClick();
@@ -713,8 +619,6 @@ if (RSLT.value.substring(0,15) == checkIfExists.id){
 
         await toast.present();
       }
-      // translatedText.value.select()
-      //document.execCommand('copy');
     };
 
     const toast = async () => {
@@ -750,7 +654,7 @@ if (RSLT.value.substring(0,15) == checkIfExists.id){
       await toast.present();
     };
 
-    ////PICKER
+    ////Language PICKER
 
     const selectedLang = ref("Hebrew");
     const langCode = [{ Hebrew: "he", Spanish: "es", Russian: "ru" }];
@@ -815,7 +719,6 @@ if (RSLT.value.substring(0,15) == checkIfExists.id){
       close,
       bookmark,
       trash,
-      // takePhoto,
       imageSrc,
       base,
       RSLT,
@@ -835,10 +738,9 @@ if (RSLT.value.substring(0,15) == checkIfExists.id){
       signOut,
       closeMenu,
       userEmail,
-      blabla,
+      saveFirestore,
       retriveFirestore,
       savedTranslations,
-      consoleSaved,
       selectSavedItem,
       newPhoto,
       deleteDoc,
