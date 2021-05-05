@@ -117,6 +117,7 @@
       <!--  Container -->
 
       <div id="container">
+        <ion-button @click="debugResize">debugResize</ion-button>
         <ion-button @click="getImageSize">Calculate image size</ion-button>
         <strong v-if="!toogleImg"
           >Click the <ion-icon icon="add" :md="add"></ion-icon> Button to scan
@@ -363,7 +364,71 @@ export default defineComponent({
     ///Stored transaltion
     const savedTranslations = ref([]);
 
+    //resize image
+    const imageResize = async (dataUrl, targetFileSizeKb, maxDeviation = 1) => {
+      console.log("resize function starts");
+      let originalFile = await urltoFile(dataUrl, "test.png", "image/png");
+      if (originalFile.size / 1000 < targetFileSizeKb) return dataUrl; // File is already smaller
+
+      let low = 0.0;
+      let middle = 0.5;
+      let high = 1.0;
+
+      let result = dataUrl;
+
+      let file = originalFile;
+
+      while (Math.abs(file.size / 1000 - targetFileSizeKb) > maxDeviation) {
+        const canvas = document.createElement("canvas");
+        const context = canvas.getContext("2d");
+        const img = document.createElement("img");
+
+        const promise = new Promise((resolve, reject) => {
+          img.onload = () => resolve();
+          img.onerror = reject;
+        });
+
+        img.src = dataUrl;
+
+        await promise;
+
+        canvas.width = Math.round(img.width * middle);
+        canvas.height = Math.round(img.height * middle);
+        context.scale(canvas.width / img.width, canvas.height / img.height);
+        context.drawImage(img, 0, 0);
+        file = await urltoFile(canvas.toDataURL(), "test.png", "image/png");
+
+        if (file.size / 1000 < targetFileSizeKb - maxDeviation) {
+          low = middle;
+        } else if (file.size / 1000 > targetFileSizeKb) {
+          high = middle;
+        }
+
+        middle = (low + high) / 2;
+        result = canvas.toDataURL();
+      }
+
+      return result;
+    };
+
+    function urltoFile(url, filename, mimeType) {
+      return fetch(url)
+        .then(function(res) {
+          return res.arrayBuffer();
+        })
+        .then(function(buf) {
+          return new File([buf], filename, { type: mimeType });
+        });
+    }
+
+    const debugResize = () => {
+      imageResize("data:image/jpeg;base64," + base.value, 700, 50).then(res => {
+        alert("finish resize"), console.log("res", res);
+      });
+    };
+
     ///Auth
+
     onMounted(() => {
       firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
@@ -405,14 +470,14 @@ export default defineComponent({
         if (base64StringLength >= 1000000) {
           alert("bigger then 1mb, need to resize!");
           globalToast("danger", "Photo is bigger then 1Mb, please resize.");
-          //resizeBase();
+          imageResize(base.value);
         } else if (base64StringLength <= 1000000) {
           uploadDocument(checkIfExists);
           alert("no need to resize");
         }
       }
 
-      console.log(checkIfExists);
+      // console.log(checkIfExists);
 
       /* // console.log("checkIfexists:",checkIfExists);
 
@@ -827,7 +892,8 @@ export default defineComponent({
       newPhoto,
       deleteDoc,
       pricetag,
-      getImageSize
+      getImageSize,
+      debugResize
     };
   }
 });
