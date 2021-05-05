@@ -61,12 +61,14 @@
                 @click.self="selectSavedItem(items.id)"
               >
                 <span>
-                  <ion-icon
-                    size="large"
-                    :name="pricetag"
-                    :md="pricetag"
-                    :ios="pricetag"
-                  ></ion-icon>
+                  <img
+                    :src="'../assets/itemTag.svg'"
+                    style="height: 23px;
+    padding-right: 5px;
+    vertical-align: bottom;
+    position: relative;
+    top: 5px;"
+                  />
                 </span>
                 &#160;{{ items.id }}
                 <!--Delete Item-->
@@ -114,13 +116,8 @@
 
       <!--  Container -->
 
-      <ion-icon
-        :name="pricetag - outline"
-        :md="pricetag - outline"
-        :ios="pricetag - outline"
-      ></ion-icon>
-
       <div id="container">
+        <ion-button @click="getImageSize">Calculate image size</ion-button>
         <strong v-if="!toogleImg"
           >Click the <ion-icon icon="add" :md="add"></ion-icon> Button to scan
           document</strong
@@ -325,6 +322,33 @@ export default defineComponent({
       takePhoto();
     };
 
+    //Get image size
+    const getImageSize = () => {
+      console.log(base.value);
+
+      let padding;
+      let inBytes;
+      let base64StringLength;
+      if (base.value.endsWith("==")) {
+        alert("padding = 2");
+        padding = 2;
+      } else if (base.value.endsWith("=")) {
+        alert("padding = 1");
+        padding = 1;
+      } else {
+        alert("padding = 0");
+        padding = 0;
+      }
+
+      base64StringLength = base.value.length;
+      console.log(base64StringLength);
+      inBytes = (base64StringLength / 4) * 3 - padding;
+      console.log(inBytes);
+      let kbytes = inBytes / 1000;
+      console.log(kbytes);
+      alert(kbytes);
+    };
+
     //Firebase auth var declair
 
     const user = ref(null);
@@ -371,9 +395,67 @@ export default defineComponent({
         ({ id }) => id == RSLT.value.substring(0, 15)
       );
 
+      //Check size of image
+      checkImageSize();
+      function checkImageSize() {
+        let base64StringLength = base.value.length;
+        alert(base64StringLength);
+
+        ///Check image size
+        if (base64StringLength >= 1000000) {
+          alert("bigger then 1mb, need to resize!");
+          globalToast("danger", "Photo is bigger then 1Mb, please resize.");
+          //resizeBase();
+        } else if (base64StringLength <= 1000000) {
+          uploadDocument(checkIfExists);
+          alert("no need to resize");
+        }
+      }
+
       console.log(checkIfExists);
 
-      // console.log("checkIfexists:",checkIfExists);
+      /* // console.log("checkIfexists:",checkIfExists);
+
+      if (RSLT.value == "") {
+        globalToast("danger", "Not Saved! No text found, please try again. ");
+      } else if (typeof checkIfExists !== "undefined") {
+        if (RSLT.value.substring(0, 15) == checkIfExists.id) {
+          globalToast("warning", "Document name already exists!");
+        }
+      } else if (typeof checkIfExists == "undefined") {
+        savedTranslations.value = [];
+
+        presentLoading();
+
+        //Clear array before FireStore write and then firestore retrive
+
+        // Add a new document in collection "cities"
+        firebase
+          .firestore()
+          .collection(userUid.value)
+          .doc(RSLT.value.substring(0, 15))
+          .set({
+            imageBase64: base.value,
+            ocrText: RSLT.value,
+            translatedText: translatedText.value
+          })
+          .then(() => {
+            closeLoading();
+            console.log("Document successfully written!");
+            toast();
+          })
+          .then(() => {
+            //  alert("Translation saved successfully!");
+          })
+          .catch(error => {
+            console.error("Error writing document: ", error);
+            closeLoading();
+          });
+      }*/
+    };
+
+    const uploadDocument = checkIfExists => {
+      console.log(checkIfExists);
 
       if (RSLT.value == "") {
         globalToast("danger", "Not Saved! No text found, please try again. ");
@@ -744,7 +826,8 @@ export default defineComponent({
       selectSavedItem,
       newPhoto,
       deleteDoc,
-      pricetag
+      pricetag,
+      getImageSize
     };
   }
 });

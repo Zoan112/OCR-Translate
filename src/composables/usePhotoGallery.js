@@ -7,9 +7,11 @@ import {
   CameraDirection,
   CameraPhoto,
   Capacitor,
-  FilesystemDirectory
+  FilesystemDirectory,
+  quality
 } from "@capacitor/core";
 
+const { Browser } = Plugins;
 var imageSrc = ref("e");
 var base = ref("");
 
@@ -18,14 +20,26 @@ export function usePhotoGallery() {
 
   const takePhoto = async () => {
     const cameraPhoto = await Camera.getPhoto({
-      resultType: CameraResultType.Base64,
       source: CameraSource.Camera,
       direction: CameraDirection.Rear,
-      quality: 100
+      quality: 10,
+      resultType: CameraResultType.Base64
     });
 
     var imageUrl = cameraPhoto.webPath;
     var imageBase = cameraPhoto.base64String;
+    var imageDataUrl = cameraPhoto.dataUrl;
+    var imagePath = cameraPhoto.path;
+    var imageexif = cameraPhoto.exif;
+    var imageuru = cameraPhoto.Uri;
+
+    console.log("base64:", imageBase);
+    console.log("DataUrl:", imageDataUrl);
+    console.log("webPath:", imageUrl);
+    console.log("Path:", imagePath);
+
+    console.log("Exif:", imageexif);
+    console.log("uri:", imageuru);
     sendtoBase(imageBase);
 
     console.log(imageUrl);
