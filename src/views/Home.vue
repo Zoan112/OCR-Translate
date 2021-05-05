@@ -117,7 +117,7 @@
       <!--  Container -->
 
       <div id="container">
-        <ion-button @click="debugResize">debugResize</ion-button>
+        <ion-button @click="Resize">debugResize</ion-button>
         <ion-button @click="getImageSize">Calculate image size</ion-button>
         <strong v-if="!toogleImg"
           >Click the <ion-icon icon="add" :md="add"></ion-icon> Button to scan
@@ -396,7 +396,7 @@ export default defineComponent({
         canvas.height = Math.round(img.height * middle);
         context.scale(canvas.width / img.width, canvas.height / img.height);
         context.drawImage(img, 0, 0);
-        file = await urltoFile(canvas.toDataURL(), "test.png", "image/png");
+        file = await urltoFile(canvas.toDataURL(), "test.jpeg", "image/jpeg");
 
         if (file.size / 1000 < targetFileSizeKb - maxDeviation) {
           low = middle;
@@ -420,12 +420,6 @@ export default defineComponent({
           return new File([buf], filename, { type: mimeType });
         });
     }
-
-    const debugResize = () => {
-      imageResize("data:image/jpeg;base64," + base.value, 700, 50).then(res => {
-        alert("finish resize"), console.log("res", res);
-      });
-    };
 
     ///Auth
 
@@ -452,6 +446,17 @@ export default defineComponent({
       });
     });
 
+    const Resize = () => {
+      imageResize("data:image/jpeg;base64," + base.value, 700, 50).then(res => {
+        globalToast(
+          "success",
+          "Re-size finished..  Proceeding to save document..."
+        ),
+          (base.value = res = res.substring(22)),
+          console.log("res", res),
+          uploadDocument();
+      });
+    };
     ///Write to fireStore
 
     const saveFirestore = () => {
@@ -464,16 +469,18 @@ export default defineComponent({
       checkImageSize();
       function checkImageSize() {
         let base64StringLength = base.value.length;
-        alert(base64StringLength);
 
         ///Check image size
         if (base64StringLength >= 1000000) {
-          alert("bigger then 1mb, need to resize!");
-          globalToast("danger", "Photo is bigger then 1Mb, please resize.");
-          imageResize(base.value);
+          console.log("bigger then 1mb, need to resize!");
+          globalToast(
+            "danger",
+            "Photo is bigger then 1Mb, Re-Sizing please wait ..."
+          );
+          Resize(base.value);
         } else if (base64StringLength <= 1000000) {
           uploadDocument(checkIfExists);
-          alert("no need to resize");
+          console.log("No resize needed");
         }
       }
 
@@ -893,7 +900,7 @@ export default defineComponent({
       deleteDoc,
       pricetag,
       getImageSize,
-      debugResize
+      Resize
     };
   }
 });
