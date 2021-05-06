@@ -447,15 +447,19 @@ export default defineComponent({
     });
 
     const Resize = () => {
-      imageResize("data:image/jpeg;base64," + base.value, 700, 50).then(res => {
-        globalToast(
-          "success",
-          "Re-size finished..  Proceeding to save document..."
-        ),
-          (base.value = res = res.substring(22)),
-          console.log("res", res),
-          uploadDocument();
-      });
+      presentLoading() +
+        imageResize("data:image/jpeg;base64," + base.value, 700, 50).then(
+          res => {
+            globalToast(
+              "success",
+              "Re-size finished..  Proceeding to save document..."
+            ),
+              closeLoading(),
+              (base.value = res = res.substring(22)),
+              console.log("res", res),
+              uploadDocument();
+          }
+        );
     };
     ///Write to fireStore
 
