@@ -2,7 +2,7 @@
   <ion-page>
     <ion-header :translucent="true">
       <ion-toolbar>
-        <ion-title>OCR-Translate</ion-title>
+        <ion-title slot="start">OCR-Translate></ion-title>
 
         <ion-icon
           class="hamburgerMenu"
@@ -499,7 +499,7 @@ export default defineComponent({
           .then(() => {
             closeLoading();
             console.log("Document successfully written!");
-            toast();
+            globalToast("success", "Saved successfully!");
           })
           .catch(error => {
             console.error("Error writing document: ", error);
@@ -558,7 +558,7 @@ export default defineComponent({
         .delete()
         .then(() => {
           console.log("Document successfully deleted!");
-          toastDelete();
+          globalToast("secondary", "Successfully deleted!");
         })
         .catch(error => {
           console.error("Error removing document: ", error);
@@ -699,48 +699,16 @@ export default defineComponent({
       console.log(translatedText.value);
       navigator.clipboard.writeText(translatedText.value);
 
-      //TODO, Merge with global toast
-      handleButtonClick();
-      async function handleButtonClick() {
-        const toast = await toastController.create({
-          color: "dark",
-          duration: 2000,
-          message: "Copied to clipboard",
-          showCloseButton: true
-        });
-
-        await toast.present();
-      }
+      globalToast("dark", "Copied to clipboard");
     };
 
-    //Toast. TODO! merge with global toast
-    const toast = async () => {
-      const toast = await toastController.create({
-        color: "success",
-        duration: 2000,
-        message: "Saved successfully!",
-        showCloseButton: true
-      });
-
-      await toast.present();
-    };
+    ///Toast
 
     const globalToast = async (color, message) => {
       const toast = await toastController.create({
         color: color,
         duration: 2000,
         message: message,
-        showCloseButton: true
-      });
-
-      await toast.present();
-    };
-
-    const toastDelete = async () => {
-      const toast = await toastController.create({
-        color: "secondary",
-        duration: 2000,
-        message: "Successfully deleted!",
         showCloseButton: true
       });
 
@@ -895,6 +863,10 @@ ion-card {
 
 .userAvatarImg {
   border: 2px solid;
+}
+
+.logo {
+  font-size: 60px;
 }
 
 .hamburgerMenu:hover {
