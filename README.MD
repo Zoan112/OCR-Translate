@@ -1,5 +1,5 @@
 
-OCR-Translate
+**OCR-Translate**
 
 This project is made using Vue 3 composition API.
  It's using OCR to detect Text in images utilizing Google vision API, Capacitor for the Camera API and native Android runtime,
@@ -10,12 +10,12 @@ This project is made using Vue 3 composition API.
 
 TODO:
 
---Toast functions into global function
---Spliting /home into components 
---Bookkeeping
---Firebase rules
+-Toast functions into global function
+-Spliting /home into components 
+-Bookkeeping
+-Firebase rules
 
 Android:
---Native Google auth 
---Splash screen
---Icon
+-Native Google auth 
+-Splash screen
+-Icon
