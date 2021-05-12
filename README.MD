@@ -10,9 +10,8 @@ You can see a hosted demo at [translate.zohar-hadari.com](https://translate.zoha
 
 TODO:
 
-- [ ] Toast functions into global function
+- [x] Toast functions into global function
 - [ ] Spliting /home into components
-- [ ] Bookkeeping
 - [ ] Firebase rules
 
 Android:

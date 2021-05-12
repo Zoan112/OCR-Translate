@@ -2,7 +2,7 @@
   <ion-page>
     <ion-header :translucent="true">
       <ion-toolbar>
-        <ion-title slot="start">OCR-Translate></ion-title>
+        <ion-title slot="start">OCR-Translate</ion-title>
 
         <ion-icon
           class="hamburgerMenu"
@@ -483,10 +483,7 @@ export default defineComponent({
         savedTranslations.value = [];
 
         presentLoading();
-
         //Clear array before FireStore write and then firestore retrive
-
-        // Add a new document in collection "cities"
         firebase
           .firestore()
           .collection(userUid.value)
@@ -537,11 +534,7 @@ export default defineComponent({
       const result = savedTranslations.value.find(
         ({ id }) => id === firestoreId
       );
-
-      console.log(result);
-
       console.log(result.image);
-
       base.value = result.image;
       ocrRslt.value = result.ocrText;
       translatedText.value = result.translatedText;
