@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from "@ionic/vue-router";
 import Home from "../views/Home.vue";
-import Camera from "../views/Camera.vue";
 import Login from "../views/Login.vue";
 
 const routes = [
@@ -9,19 +8,10 @@ const routes = [
     redirect: "/login"
   },
   {
-    path: "/",
-    redirect: "/login"
-  },
-  {
     path: "/home",
     name: "Home",
     component: Home,
     meta: { requiresAuth: true }
-  },
-  {
-    path: "/Camera",
-    name: "Camera",
-    component: Camera
   },
   {
     path: "/login",

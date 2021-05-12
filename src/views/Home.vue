@@ -94,12 +94,6 @@
       id="content"
       style="background-color:#86868630;"
     >
-      <!--<ion-header collapse="condense">
-        <ion-toolbar>
-          <ion-title size="large">WWW</ion-title>
-        </ion-toolbar>
-      </ion-header>-->
-
       <!-- FAB Add button  -->
 
       <ion-fab vertical="bottom" horizontal="end" slot="fixed">
@@ -135,7 +129,7 @@
               <ion-card-content>
                 <ion-textarea
                   v-if="showTranslateBtn"
-                  v-model="RSLT"
+                  v-model="ocrRslt"
                   auto-grow
                 ></ion-textarea>
               </ion-card-content>
@@ -260,15 +254,9 @@ import {
   pricetag
 } from "ionicons/icons";
 
-import {
-  usePhotoGallery,
-  sendtoVue,
-  imageSrc,
-  base
-} from "@/composables/usePhotoGallery";
-import { CameraSource } from "@capacitor/core";
+import { usePhotoGallery, base } from "@/composables/usePhotoGallery";
 
-import googleFunc from "../main.js";
+import { CameraSource } from "@capacitor/core";
 
 import firebase from "firebase";
 
@@ -288,7 +276,6 @@ export default defineComponent({
     IonRow,
     IonCol,
     IonImg,
-    imageSrc,
     IonButton,
     IonCard,
     IonCardContent,
@@ -304,17 +291,15 @@ export default defineComponent({
   setup() {
     const { takePhoto } = usePhotoGallery();
     const router = useRouter();
-
-    const RSLT = ref();
+    const ocrRslt = ref();
     const translatedText = ref();
-
     const showTranslateBtn = ref(false);
 
     // TakePhoto
 
     const newPhoto = () => {
       base.value = "";
-      RSLT.value = "";
+      ocrRslt.value = "";
       translatedText.value = "";
       showAfterTranslate.value = false;
 
@@ -350,7 +335,6 @@ export default defineComponent({
 
     //Firebase auth var declair
 
-    const user = ref(null);
     const userAvatar = ref(null);
     const userName = ref(null);
     const userEmail = ref(null);
@@ -425,7 +409,6 @@ export default defineComponent({
       firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
           // User is signed in.
-          console.log(user);
           console.log(user.displayName);
           userName.value = user.displayName;
           userAvatar.value = user.photoURL;
@@ -439,7 +422,7 @@ export default defineComponent({
           console.log(userAvatar.value);
         } else {
           // No user is signed in.
-          console.log("not lodged", user);
+          console.log("not logged", user);
         }
       });
     });
@@ -464,7 +447,7 @@ export default defineComponent({
     const saveFirestore = () => {
       //Check if file exist in array by taking first 15 charcthers and compering them to array.
       let checkIfExists = savedTranslations.value.find(
-        ({ id }) => id == RSLT.value.substring(0, 15)
+        ({ id }) => id == ocrRslt.value.substring(0, 15)
       );
 
       //Check size of image
@@ -485,56 +468,15 @@ export default defineComponent({
           console.log("No resize needed");
         }
       }
-
-      // console.log(checkIfExists);
-
-      /* // console.log("checkIfexists:",checkIfExists);
-
-      if (RSLT.value == "") {
-        globalToast("danger", "Not Saved! No text found, please try again. ");
-      } else if (typeof checkIfExists !== "undefined") {
-        if (RSLT.value.substring(0, 15) == checkIfExists.id) {
-          globalToast("warning", "Document name already exists!");
-        }
-      } else if (typeof checkIfExists == "undefined") {
-        savedTranslations.value = [];
-
-        presentLoading();
-
-        //Clear array before FireStore write and then firestore retrive
-
-        // Add a new document in collection "cities"
-        firebase
-          .firestore()
-          .collection(userUid.value)
-          .doc(RSLT.value.substring(0, 15))
-          .set({
-            imageBase64: base.value,
-            ocrText: RSLT.value,
-            translatedText: translatedText.value
-          })
-          .then(() => {
-            closeLoading();
-            console.log("Document successfully written!");
-            toast();
-          })
-          .then(() => {
-            //  alert("Translation saved successfully!");
-          })
-          .catch(error => {
-            console.error("Error writing document: ", error);
-            closeLoading();
-          });
-      }*/
     };
 
     const uploadDocument = checkIfExists => {
       console.log(checkIfExists);
 
-      if (RSLT.value == "") {
+      if (ocrRslt.value == "") {
         globalToast("danger", "Not Saved! No text found, please try again. ");
       } else if (typeof checkIfExists !== "undefined") {
-        if (RSLT.value.substring(0, 15) == checkIfExists.id) {
+        if (ocrRslt.value.substring(0, 15) == checkIfExists.id) {
           globalToast("warning", "Document name already exists!");
         }
       } else if (typeof checkIfExists == "undefined") {
@@ -548,19 +490,16 @@ export default defineComponent({
         firebase
           .firestore()
           .collection(userUid.value)
-          .doc(RSLT.value.substring(0, 15))
+          .doc(ocrRslt.value.substring(0, 15))
           .set({
             imageBase64: base.value,
-            ocrText: RSLT.value,
+            ocrText: ocrRslt.value,
             translatedText: translatedText.value
           })
           .then(() => {
             closeLoading();
             console.log("Document successfully written!");
             toast();
-          })
-          .then(() => {
-            //  alert("Translation saved successfully!");
           })
           .catch(error => {
             console.error("Error writing document: ", error);
@@ -570,7 +509,6 @@ export default defineComponent({
     };
 
     const retriveFirestore = () => {
-      console.log("from retrive");
       savedTranslations.value = [];
 
       firebase
@@ -595,7 +533,6 @@ export default defineComponent({
 
     const selectSavedItem = firestoreId => {
       console.log(firestoreId);
-      console.log(savedTranslations.value);
 
       const result = savedTranslations.value.find(
         ({ id }) => id === firestoreId
@@ -606,7 +543,7 @@ export default defineComponent({
       console.log(result.image);
 
       base.value = result.image;
-      RSLT.value = result.ocrText;
+      ocrRslt.value = result.ocrText;
       translatedText.value = result.translatedText;
     };
 
@@ -636,7 +573,6 @@ export default defineComponent({
 
     //Menu
     const openMenu = () => {
-      console.log("open Menu");
       menuController.enable(true, "custom");
       menuController.open("custom");
     };
@@ -646,21 +582,6 @@ export default defineComponent({
     };
 
     //History
-
-    const printUserInfo = () => {
-      console.log(userAvatar);
-
-      firebase.auth().onAuthStateChanged(function(user) {
-        if (user) {
-          // User is signed in.
-          console.log(user);
-          console.log(user.displayName);
-        } else {
-          // No user is signed in.
-          console.log("not lodged", user);
-        }
-      });
-    };
 
     //Send base64 Img to google functions
     const processOcr = () => {
@@ -676,7 +597,7 @@ export default defineComponent({
           console.log(result);
           console.log(result.data);
           const parseOcr = JSON.parse(result.data);
-          RSLT.value = parseOcr;
+          ocrRslt.value = parseOcr;
         })
         .then(() => {
           closeLoading();
@@ -696,12 +617,12 @@ export default defineComponent({
         });
     };
 
-    //Send text results to google functions
+    //Send OCR_text results to google functions for transaltion.
     const processTranslate = () => {
       // googleFunc.useEmulator("localhost", 5001);
       presentLoading();
       console.log("present loading");
-      const RSLTFire = RSLT.value;
+      const RSLTFire = ocrRslt.value;
 
       let selctedlang = selectedLang.value;
       const lang = langCode[0][selctedlang];
@@ -728,18 +649,19 @@ export default defineComponent({
     watch(base, () => {
       if (base.value === "") {
         console.log("from base.value", base.value);
-        printUserInfo;
         toogleImg.value = false;
       } else if (base.value !== "") {
         toogleImg.value = true;
       }
     });
 
+    /*Close loading modal*/
+
     const closeLoading = async () => {
       await loadingController.dismiss();
     };
 
-    /*load control*/
+    /*loading screen modal*/
 
     const presentLoading = async () => {
       const loading = await loadingController.create({
@@ -753,11 +675,11 @@ export default defineComponent({
 
     ///Conditonal rendering translate button
 
-    watch(RSLT, () => {
-      if (RSLT.value === "") {
-        console.log("from RSLT.value = '' ", RSLT.value);
+    watch(ocrRslt, () => {
+      if (ocrRslt.value === "") {
+        console.log("from ocrRslt.value = '' ", ocrRslt.value);
         showTranslateBtn.value = false;
-      } else if (RSLT.value !== "") {
+      } else if (ocrRslt.value !== "") {
         showTranslateBtn.value = true;
 
         console.log("dissmiss");
@@ -777,6 +699,7 @@ export default defineComponent({
       console.log(translatedText.value);
       navigator.clipboard.writeText(translatedText.value);
 
+      //TODO, Merge with global toast
       handleButtonClick();
       async function handleButtonClick() {
         const toast = await toastController.create({
@@ -790,6 +713,7 @@ export default defineComponent({
       }
     };
 
+    //Toast. TODO! merge with global toast
     const toast = async () => {
       const toast = await toastController.create({
         color: "success",
@@ -825,7 +749,10 @@ export default defineComponent({
 
     ////Language PICKER
 
+    //Default selected language
     const selectedLang = ref("Hebrew");
+
+    //Language options
     const langCode = [{ Hebrew: "he", Spanish: "es", Russian: "ru" }];
 
     const defaultColumnOptions = [["Hebrew", "Spanish", "Russian"]];
@@ -888,9 +815,8 @@ export default defineComponent({
       close,
       bookmark,
       trash,
-      imageSrc,
       base,
-      RSLT,
+      ocrRslt,
       toogleImg,
       translatedText,
       processOcr,
@@ -900,7 +826,6 @@ export default defineComponent({
       showAfterTranslate,
       openPicker,
       selectedLang,
-      printUserInfo,
       userName,
       userAvatar,
       openMenu,
@@ -982,7 +907,6 @@ ion-card {
 }
 
 ion-item:hover {
-  /*--background-hover: red;*/
   --background: #bdc3c7;
   cursor: pointer;
 }
@@ -1020,8 +944,6 @@ ion-item:hover {
 .signOut {
   font-size: 1.1em;
   font-weight: 450;
-  /*--border-color: black;*/
-
   border-bottom: 2px solid #bdc3c7;
 }
 

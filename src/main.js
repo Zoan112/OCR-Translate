@@ -5,6 +5,7 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
 
+// Import ionic
 import { IonicVue } from "@ionic/vue";
 
 // Call the element loader after the platform has been bootstrapped
@@ -44,22 +45,6 @@ firebase.initializeApp({
 });
 let app = "";
 
-/*
-const app = createApp(App)
-  .use(IonicVue)
-  .use(router);
-
-router.isReady().then(() => {
-  app.mount("#app");
-});
-*/
-const googleFunc = firebase.functions();
-
-export default googleFunc + firebase;
-console.log("from main", googleFunc);
-console.log("from main firebase auth", firebase.auth());
-console.log("from main firebase auth", firebase.auth().onAuthStateChanged);
-
 firebase.auth().onAuthStateChanged(user => {
   if (!app) {
     console.log(user);
@@ -72,16 +57,3 @@ firebase.auth().onAuthStateChanged(user => {
     });
   }
 });
-
-/*
-firebase.auth().onAuthStateChanged(function(user) {
-  if (user) {
-    // User is signed in.
-    console.log(user);
-    console.log(user.displayName);
-  } else {
-    // No user is signed in.
-    console.log("not lodged", user);
-  }
-});
-*/

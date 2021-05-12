@@ -4,16 +4,11 @@ import {
   Plugins,
   CameraResultType,
   CameraSource,
-  CameraDirection,
-  CameraPhoto
-  // Capacitor,
-  //FilesystemDirectory,
-  // quality
+  CameraDirection
 } from "@capacitor/core";
 
 import { isPlatform } from "@ionic/vue";
 
-var imageSrc = ref("e");
 var base = ref("");
 
 export function usePhotoGallery() {
@@ -32,8 +27,6 @@ export function usePhotoGallery() {
     console.log("base64:", imageBase);
 
     sendtoBase(imageBase);
-
-    sendtoVue(imageUrl);
   };
 
   return {
@@ -41,14 +34,8 @@ export function usePhotoGallery() {
   };
 }
 
-export function sendtoVue(x) {
-  imageSrc.value = ref(x);
-  console.log("from: send to vue", imageSrc);
-  //return ref(imageSrc)
-}
-
 export function sendtoBase(x) {
   base.value = x;
 }
 
-export { imageSrc, base };
+export { base };
