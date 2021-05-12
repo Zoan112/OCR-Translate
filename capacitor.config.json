@@ -1,12 +1,18 @@
 {
-  "appId": "io.ionic.starter",
-  "appName": "OCR-ionic",
+  "appId": "com.ocrtranslate.zohar",
+  "appName": "OCR-Translate",
   "bundledWebRuntime": false,
   "npmClient": "npm",
   "webDir": "dist",
+  "linuxAndroidStudioPath": "/snap/android-studio/current/android-studio/bin/studio.sh",
   "plugins": {
     "SplashScreen": {
       "launchShowDuration": 0
+    },
+    "GoogleAuth": {
+      "scopes": ["profile", "email"],
+      "serverClientId": "326340236602-b0o6uld5140e4rdl7i6crg5c7k4jrto5.apps.googleusercontent.com",
+      "forceCodeForRefreshToken": true
     }
   },
   "cordova": {}

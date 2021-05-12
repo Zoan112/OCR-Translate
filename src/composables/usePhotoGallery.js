@@ -11,6 +11,8 @@ import {
   // quality
 } from "@capacitor/core";
 
+import { isPlatform } from "@ionic/vue";
+
 var imageSrc = ref("e");
 var base = ref("");
 

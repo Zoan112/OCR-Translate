@@ -2,12 +2,14 @@
   <ion-page>
     <ion-header :translucent="true">
       <ion-toolbar>
-        <ion-title>OCR-Translate</ion-title>
+        <ion-title>OCR-Translate1</ion-title>
       </ion-toolbar>
     </ion-header>
     <ion-content>
       <section id="firebaseui-auth-container"></section>
-
+      <p>test 456</p>
+      <p>userdata:{{ userdata }}</p>
+      <ion-button @click="googleSignIn">native sign-up</ion-button>
       <!--<p>
         For demo log-in, press sing-up with Email. <br />Credentials:
         <br />Email: ocrtranslate@protonmail.com <br />Password: ocrdemo
@@ -17,11 +19,15 @@
 </template>
 
 <script>
-import { onMounted, defineComponent } from "vue";
+import { onMounted, defineComponent, ref } from "vue";
 
 import firebase from "firebase";
 import * as firebaseui from "firebaseui";
 import "firebaseui/dist/firebaseui.css";
+
+import "@codetrix-studio/capacitor-google-auth";
+import { Plugins } from "@capacitor/core";
+//Plugins.GoogleAuth.signIn();
 
 import {
   IonHeader,
@@ -55,7 +61,20 @@ export default defineComponent({
       ui.start("#firebaseui-auth-container", uiConfig);
     });
 
-    return {};
+    const userdata = ref("");
+
+    const googleSignIn = async () => {
+      let googleUser = await Plugins.GoogleAuth.signIn(null);
+      /*const credential = auth.GoogleAuthProvider.credential(
+        googleUser.authentication.idToken
+      );*/
+      userdata.value = googleUser;
+      console.log(googleUser);
+      console.log("from user");
+      //return this.afAuth.auth.signInAndRetrieveDataWithCredential(credential);
+    };
+
+    return { userdata, googleSignIn };
   }
 });
 </script>

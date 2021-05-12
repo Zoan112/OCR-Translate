@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">OCR-Translate</string>
+    <string name="title_activity_main">OCR-Translate</string>
+    <string name="package_name">com.ocrtranslate.zohar</string>
+    <string name="custom_url_scheme">com.ocrtranslate.zohar</string>
+    <string name="server_client_id">326340236602-b0o6uld5140e4rdl7i6crg5c7k4jrto5.apps.googleusercontent.com</string>
+    
+</resources>

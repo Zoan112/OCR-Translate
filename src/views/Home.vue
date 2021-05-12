@@ -117,8 +117,6 @@
       <!--  Container -->
 
       <div id="container">
-        <ion-button @click="Resize">debugResize</ion-button>
-        <ion-button @click="getImageSize">Calculate image size</ion-button>
         <strong v-if="!toogleImg"
           >Click the <ion-icon icon="add" :md="add"></ion-icon> Button to scan
           document</strong
@@ -666,7 +664,7 @@ export default defineComponent({
 
     //Send base64 Img to google functions
     const processOcr = () => {
-      // googleFunc.useEmulator("localhost", 5001);
+      // firebase.functions().useEmulator("localhost", 5001);
 
       presentLoading();
       var baseFire = base.value;
@@ -682,6 +680,19 @@ export default defineComponent({
         })
         .then(() => {
           closeLoading();
+        })
+        .catch(error => {
+          // Getting the Error details.
+
+          console.log(error.message);
+          console.log(error.code);
+          if (error.message == "no-text recognized") {
+            globalToast(
+              "danger",
+              "No text found, Please scan another document."
+            );
+            closeLoading();
+          }
         });
     };
 
@@ -902,9 +913,7 @@ export default defineComponent({
       selectSavedItem,
       newPhoto,
       deleteDoc,
-      pricetag,
-      getImageSize,
-      Resize
+      pricetag
     };
   }
 });
