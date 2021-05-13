@@ -10,13 +10,13 @@ You can see a hosted demo at [translate.zohar-hadari.com](https://translate.zoha
 
 TODO:
 
-- [x] Toast functions into global function
-- [ ] Spliting /home into components
-- [ ] Better firestore data modeling
-- [ ] Firebase rules
+- [x] Toast functions into global function.
+- [ ] Spliting /home into components & composables.
+- [ ] Better firestore data modeling.
+- [ ] Firebase rules.
 
 Android:
 
-- [ ] Native Google auth
-- [ ] Splash screen
-- [ ] Icon
+- [ ] Native Google auth.
+- [ ] Splash screen.
+- [ ] Icon.
