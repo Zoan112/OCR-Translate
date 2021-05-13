@@ -224,7 +224,6 @@ import {
   IonButton,
   IonDatetime,
   pickerController,
-  loadingController,
   IonAvatar,
   menuController,
   IonMenu,
@@ -265,6 +264,7 @@ import { CameraSource } from "@capacitor/core";
 import firebase from "firebase";
 
 import globalToast from "@/composables/Toast";
+import { presentLoading, closeLoading } from "@/composables/LoadingScreen";
 
 export default defineComponent({
   name: "Home",
@@ -653,24 +653,6 @@ export default defineComponent({
         toogleImg.value = true;
       }
     });
-
-    /*Close loading modal*/
-
-    const closeLoading = async () => {
-      await loadingController.dismiss();
-    };
-
-    /*loading screen modal*/
-
-    const presentLoading = async () => {
-      const loading = await loadingController.create({
-        cssClass: "my-custom-class",
-        message: "Please wait...",
-        duration: true
-      });
-
-      await loading.present();
-    };
 
     ///Conditonal rendering translate button
 
