@@ -203,6 +203,7 @@
 
 <script>
 /* eslint-disable */
+
 import {
   IonContent,
   IonHeader,
@@ -221,8 +222,6 @@ import {
   IonCardContent,
   IonTextarea,
   IonButton,
-  toastController,
-  IonToast,
   IonDatetime,
   pickerController,
   loadingController,
@@ -264,6 +263,8 @@ import { usePhotoGallery, base } from "@/composables/usePhotoGallery";
 import { CameraSource } from "@capacitor/core";
 
 import firebase from "firebase";
+
+import globalToast from "@/composables/Toast";
 
 export default defineComponent({
   name: "Home",
@@ -698,19 +699,6 @@ export default defineComponent({
       navigator.clipboard.writeText(translatedText.value);
 
       globalToast("dark", "Copied to clipboard");
-    };
-
-    ///Toast
-
-    const globalToast = async (color, message) => {
-      const toast = await toastController.create({
-        color: color,
-        duration: 2000,
-        message: message,
-        showCloseButton: true
-      });
-
-      await toast.present();
     };
 
     ////Language PICKER
