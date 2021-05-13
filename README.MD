@@ -12,6 +12,7 @@ TODO:
 
 - [x] Toast functions into global function
 - [ ] Spliting /home into components
+- [ ] Better firestore data modeling
 - [ ] Firebase rules
 
 Android:

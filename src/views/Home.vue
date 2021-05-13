@@ -2,6 +2,11 @@
   <ion-page>
     <ion-header :translucent="true">
       <ion-toolbar>
+        <ion-icon
+          slot="start"
+          class="logo"
+          :src="'../assets/language.svg'"
+        ></ion-icon>
         <ion-title slot="start">OCR-Translate</ion-title>
 
         <ion-icon
@@ -858,8 +863,12 @@ ion-card {
   border: 2px solid;
 }
 
+ion-title {
+  padding: 0px;
+}
+
 .logo {
-  font-size: 60px;
+  font-size: 45px;
 }
 
 .hamburgerMenu:hover {

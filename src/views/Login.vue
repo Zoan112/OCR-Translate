@@ -2,9 +2,16 @@
   <ion-page>
     <ion-header :translucent="true">
       <ion-toolbar>
-        <ion-title>OCR-Translate</ion-title>
+        <ion-icon
+          slot="start"
+          class="logo"
+          :src="'../assets/language.svg'"
+        ></ion-icon>
+
+        <ion-title slot="start">OCR-Translate</ion-title>
       </ion-toolbar>
     </ion-header>
+
     <ion-content>
       <section id="firebaseui-auth-container"></section>
 
@@ -86,5 +93,13 @@ export default defineComponent({
 <style scoped>
 p {
   text-align: center;
+}
+
+.logo {
+  font-size: 40px;
+}
+
+ion-title {
+  padding: 0px;
 }
 </style>
