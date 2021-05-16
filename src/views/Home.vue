@@ -171,6 +171,7 @@
                         size="large"
                         :icon="copy"
                         :md="copy"
+                        :ios="copy"
                       ></ion-icon
                     ></ion-button>
                   </ion-col>
@@ -223,7 +224,6 @@ import {
   IonTextarea,
   IonButton,
   IonDatetime,
-  pickerController,
   IonAvatar,
   menuController,
   IonMenu,
@@ -265,6 +265,7 @@ import firebase from "firebase";
 
 import globalToast from "@/composables/Toast";
 import { presentLoading, closeLoading } from "@/composables/LoadingScreen";
+import { openPicker, selectedLang } from "@/composables/langPicker";
 
 export default defineComponent({
   name: "Home",
@@ -625,6 +626,7 @@ export default defineComponent({
 
       let selctedlang = selectedLang.value;
       const lang = langCode[0][selctedlang];
+
       const sendToTranslate = firebase
         .functions()
         .httpsCallable("processTranlateLang");
@@ -677,70 +679,12 @@ export default defineComponent({
 
     //Add translation to clipboard
     const addToClipboard = () => {
-      console.log(translatedText.value);
       navigator.clipboard.writeText(translatedText.value);
-
       globalToast("dark", "Copied to clipboard");
     };
 
-    ////Language PICKER
-
-    //Default selected language
-    const selectedLang = ref("Hebrew");
-
-    //Language options
+    ////Language codes
     const langCode = [{ Hebrew: "he", Spanish: "es", Russian: "ru" }];
-
-    const defaultColumnOptions = [["Hebrew", "Spanish", "Russian"]];
-    async function openPicker(
-      numColumns = 1,
-      numOptions = 3,
-      columnOptions = defaultColumnOptions
-    ) {
-      const picker = await pickerController.create({
-        columns: getColumns(numColumns, numOptions, columnOptions),
-        buttons: [
-          {
-            text: "Cancel",
-            role: "cancel"
-          },
-          {
-            text: "Confirm",
-            handler: value => {
-              console.log(`Got Value ${value}`) +
-                console.log(value["col-0"].text);
-              selectedLang.value = value["col-0"].text;
-            }
-          }
-        ]
-      });
-
-      await picker.present();
-    }
-
-    function getColumns(numColumns, numOptions, columnOptions) {
-      let columns = [];
-      for (let i = 0; i < numColumns; i++) {
-        columns.push({
-          name: `col-${i}`,
-          options: getColumnOptions(i, numOptions, columnOptions)
-        });
-      }
-
-      return columns;
-    }
-
-    function getColumnOptions(columnIndex, numOptions, columnOptions) {
-      let options = [];
-      for (let i = 0; i < numOptions; i++) {
-        options.push({
-          text: columnOptions[columnIndex][i % numOptions],
-          value: i
-        });
-      }
-
-      return options;
-    }
 
     return {
       add,
