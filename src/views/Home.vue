@@ -36,17 +36,7 @@
     >
       <!-- FAB Add button  -->
 
-      <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-        <ion-fab-button>
-          <ion-icon :name="add" :icon="add" :md="add"></ion-icon>
-        </ion-fab-button>
-
-        <ion-fab-list side="top">
-          <ion-fab-button @click="newPhoto"
-            ><ion-icon :icon="camera" :md="camera"></ion-icon
-          ></ion-fab-button>
-        </ion-fab-list>
-      </ion-fab>
+      <Fab />
 
       <!--  Container -->
       <ion-button @click="debug">debug</ion-button>
@@ -179,32 +169,23 @@ import {
   onMounted
 } from "vue";
 
-import {
-  add,
-  camera,
-  close,
-  copy,
-  menu,
-  bookmark,
-  pricetag
-} from "ionicons/icons";
+import { close, copy, menu, bookmark, pricetag, add } from "ionicons/icons";
 
-import { usePhotoGallery, base } from "@/composables/usePhotoGallery";
-
-import { CameraSource } from "@capacitor/core";
-
+import { base } from "@/composables/usePhotoGallery";
+//import { CameraSource } from "@capacitor/core";
 import firebase from "firebase";
 
 import globalToast from "@/composables/Toast";
 import { presentLoading, closeLoading } from "@/composables/LoadingScreen";
 import { openPicker, selectedLang } from "@/composables/langPicker";
-//import translateApiCall from "@/composables/translateApiCall";
+
 import {
   processTranslate,
   translatedText
 } from "@/composables/translateApiCall";
 
 import Menu from "../views/components/Menu";
+import Fab from "../views/components/Fab";
 
 export default defineComponent({
   name: "Home",
@@ -233,22 +214,13 @@ export default defineComponent({
     IonItemGroup,
     IonLabel,
     IonItemDivider,
-    Menu
+    Menu,
+    Fab
   },
   setup() {
-    const { takePhoto } = usePhotoGallery();
     const ocrRslt = ref();
     //  const translatedText = ref(translatedText);
     const showTranslateBtn = ref(false);
-
-    // TakePhoto
-    const newPhoto = () => {
-      base.value = "";
-      ocrRslt.value = "";
-      translatedText.value = "";
-      showAfterTranslate.value = false;
-      takePhoto();
-    };
 
     const debug = () => {
       console.log("savedTranslations", savedTranslations);
@@ -574,7 +546,6 @@ export default defineComponent({
     return {
       add,
       copy,
-      camera,
       menu,
       close,
       bookmark,
@@ -584,7 +555,6 @@ export default defineComponent({
       translatedText,
       processOcr,
       processTranslate,
-      //translateApiCall,
       showTranslateBtn,
       addToClipboard,
       showAfterTranslate,
@@ -594,7 +564,6 @@ export default defineComponent({
       openMenu,
       userEmail,
       saveFirestore,
-      newPhoto,
       pricetag,
       Menu,
       userName,
@@ -602,7 +571,8 @@ export default defineComponent({
       debug,
       onDocSelection,
       userUid,
-      onTranslatedText
+      onTranslatedText,
+      Fab
     };
   }
 });
