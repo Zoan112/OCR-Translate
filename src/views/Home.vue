@@ -19,79 +19,14 @@
       </ion-toolbar>
     </ion-header>
 
-    <!--Menu-->
-
-    <ion-menu
-      side="end"
-      menu-id="custom"
-      class="my-custom-menu"
-      content-id="content"
-    >
-      <!-- Header Menu-->
-      <ion-header>
-        <ion-toolbar class="menuTitles" color="primary">
-          <ion-title>{{ userName }}</ion-title>
-          <p class="userEmail">{{ userEmail }}</p>
-          <ion-avatar class="userAvatar" slot="end">
-            <img class="userAvatarImg" @click="closeMenu" :src="userAvatar" />
-          </ion-avatar>
-        </ion-toolbar>
-      </ion-header>
-      <ion-content>
-        <ion-list>
-          <!--Sign out-->
-          <ion-item lines="full" class="signOut" @click="signOut"
-            >Sign Out</ion-item
-          >
-
-          <ion-item-group>
-            <ion-item-divider size="large" color="">
-              <ion-label class="savedTranslationLabel"
-                ><ion-icon
-                  class="menuBookmark"
-                  size="large"
-                  :name="bookmark"
-                  :md="bookmark"
-                  :ios="bookmark"
-                ></ion-icon
-                >Saved:</ion-label
-              >
-            </ion-item-divider>
-
-            <!--Saved items-->
-
-            <span v-for="items in savedTranslations">
-              <ion-item
-                class="savedItems"
-                @click.self="selectSavedItem(items.id)"
-              >
-                <span>
-                  <img
-                    :src="'../assets/itemTag.svg'"
-                    style="height: 23px;
-    padding-right: 5px;
-    vertical-align: bottom;
-    position: relative;
-    top: 5px;"
-                  />
-                </span>
-                &#160;{{ items.id }}
-                <!--Delete Item-->
-                <ion-button
-                  @click.self="deleteDoc(items.id)"
-                  size="large"
-                  slot="end"
-                  fill="outline"
-                  class="trash"
-                >
-                  <ion-icon :name="trash" :md="trash" :ios="trash"></ion-icon
-                ></ion-button>
-              </ion-item>
-            </span>
-          </ion-item-group>
-        </ion-list>
-      </ion-content>
-    </ion-menu>
+    <Menu
+      :savedTranslations="savedTranslations"
+      :userName="userName"
+      :userEmail="userEmail"
+      :userUid="userUid"
+      :userAvatar="userAvatar"
+      @docSelection="onDocSelection"
+    />
 
     <ion-content
       :fullscreen="false"
@@ -114,7 +49,7 @@
       </ion-fab>
 
       <!--  Container -->
-
+      <ion-button @click="debug">debug</ion-button>
       <div id="container">
         <strong v-if="!toogleImg"
           >Click the <ion-icon icon="add" :md="add"></ion-icon> Button to scan
@@ -154,7 +89,7 @@
                   </ion-col>
                   <ion-col>
                     <ion-button
-                      @click="processTranslate"
+                      @click="processTranslate(ocrRslt, selectedLang)"
                       v-if="showTranslateBtn"
                       >Translate</ion-button
                     >
@@ -244,12 +179,9 @@ import {
   onMounted
 } from "vue";
 
-import { useRouter } from "vue-router";
-
 import {
   add,
   camera,
-  trash,
   close,
   copy,
   menu,
@@ -266,6 +198,13 @@ import firebase from "firebase";
 import globalToast from "@/composables/Toast";
 import { presentLoading, closeLoading } from "@/composables/LoadingScreen";
 import { openPicker, selectedLang } from "@/composables/langPicker";
+//import translateApiCall from "@/composables/translateApiCall";
+import {
+  processTranslate,
+  translatedText
+} from "@/composables/translateApiCall";
+
+import Menu from "../views/components/Menu";
 
 export default defineComponent({
   name: "Home",
@@ -293,26 +232,28 @@ export default defineComponent({
     IonList,
     IonItemGroup,
     IonLabel,
-    IonItemDivider
+    IonItemDivider,
+    Menu
   },
   setup() {
     const { takePhoto } = usePhotoGallery();
-    const router = useRouter();
     const ocrRslt = ref();
-    const translatedText = ref();
+    //  const translatedText = ref(translatedText);
     const showTranslateBtn = ref(false);
 
     // TakePhoto
-
     const newPhoto = () => {
       base.value = "";
       ocrRslt.value = "";
       translatedText.value = "";
       showAfterTranslate.value = false;
-
       takePhoto();
     };
 
+    const debug = () => {
+      console.log("savedTranslations", savedTranslations);
+      console.log("savedTranslations.value", savedTranslations.value);
+    };
     //Get image size
     const getImageSize = () => {
       console.log(base.value);
@@ -349,9 +290,6 @@ export default defineComponent({
 
     //Default user avatar. (if user as no avatar)
     userAvatar.value = "../assets/avatar.svg";
-
-    ///Stored transaltion
-    const savedTranslations = ref([]);
 
     //resize image
     const imageResize = async (dataUrl, targetFileSizeKb, maxDeviation = 1) => {
@@ -419,6 +357,7 @@ export default defineComponent({
           console.log(user.displayName);
           userName.value = user.displayName;
           userAvatar.value = user.photoURL;
+          console.log(userAvatar.value);
           userEmail.value = user.email;
           userUid.value = user.uid;
           retriveFirestore();
@@ -476,6 +415,7 @@ export default defineComponent({
         }
       }
     };
+    const savedTranslations = ref([]);
 
     const uploadDocument = checkIfExists => {
       console.log(checkIfExists);
@@ -533,52 +473,11 @@ export default defineComponent({
         });
     };
 
-    // Select saved item
-
-    const selectSavedItem = firestoreId => {
-      console.log(firestoreId);
-
-      const result = savedTranslations.value.find(
-        ({ id }) => id === firestoreId
-      );
-      console.log(result.image);
-      base.value = result.image;
-      ocrRslt.value = result.ocrText;
-      translatedText.value = result.translatedText;
-    };
-
-    //Delete Item
-    const deleteDoc = firestoreId => {
-      savedTranslations.value = [];
-
-      firebase
-        .firestore()
-        .collection(userUid.value)
-        .doc(firestoreId)
-        .delete()
-        .then(() => {
-          console.log("Document successfully deleted!");
-          globalToast("secondary", "Successfully deleted!");
-        })
-        .catch(error => {
-          console.error("Error removing document: ", error);
-        });
-    };
-
-    //SignOut
-    const signOut = () => {
-      firebase.auth().signOut();
-      router.push({ path: "login" });
-    };
-
     //Menu
     const openMenu = () => {
+      console.log("menu open");
       menuController.enable(true, "custom");
       menuController.open("custom");
-    };
-
-    const closeMenu = () => {
-      menuController.close("custom");
     };
 
     //History
@@ -614,32 +513,6 @@ export default defineComponent({
             );
             closeLoading();
           }
-        });
-    };
-
-    //Send OCR_text results to google functions for transaltion.
-    const processTranslate = () => {
-      // googleFunc.useEmulator("localhost", 5001);
-      presentLoading();
-      console.log("present loading");
-      const RSLTFire = ocrRslt.value;
-
-      let selctedlang = selectedLang.value;
-      const lang = langCode[0][selctedlang];
-
-      const sendToTranslate = firebase
-        .functions()
-        .httpsCallable("processTranlateLang");
-
-      sendToTranslate({ lang, RSLTFire })
-        .then(result => {
-          console.log(result);
-          console.log(result.data);
-
-          translatedText.value = JSON.parse(result.data);
-        })
-        .then(() => {
-          closeLoading();
         });
     };
 
@@ -686,39 +559,50 @@ export default defineComponent({
     ////Language codes
     const langCode = [{ Hebrew: "he", Spanish: "es", Russian: "ru" }];
 
+    //Emit from Menu when a doc is selected.
+    const onDocSelection = (ocrText, transText) => {
+      console.log("emit");
+      ocrRslt.value = ocrText;
+      translatedText.value = transText;
+    };
+
+    const onTranslatedText = () => {
+      console.log("emit");
+      alert("translated text emitss!!!!");
+    };
+
     return {
       add,
       copy,
       camera,
-      trash,
       menu,
       close,
       bookmark,
-      trash,
       base,
       ocrRslt,
       toogleImg,
       translatedText,
       processOcr,
       processTranslate,
+      //translateApiCall,
       showTranslateBtn,
       addToClipboard,
       showAfterTranslate,
       openPicker,
       selectedLang,
-      userName,
       userAvatar,
       openMenu,
-      signOut,
-      closeMenu,
       userEmail,
       saveFirestore,
-      retriveFirestore,
-      savedTranslations,
-      selectSavedItem,
       newPhoto,
-      deleteDoc,
-      pricetag
+      pricetag,
+      Menu,
+      userName,
+      savedTranslations,
+      debug,
+      onDocSelection,
+      userUid,
+      onTranslatedText
     };
   }
 });
@@ -765,18 +649,6 @@ ion-card {
   text-decoration: underline;
 }
 
-.userAvatar {
-  padding: 5px;
-}
-
-.userAvatar:hover {
-  cursor: pointer;
-}
-
-.userAvatarImg {
-  border: 2px solid;
-}
-
 ion-title {
   padding: 0px;
 }
@@ -792,47 +664,6 @@ ion-title {
 
 .hamburgerMenu {
   font-size: 60px;
-}
-
-ion-item:hover {
-  --background: #bdc3c7;
-  cursor: pointer;
-}
-
-.userEmail {
-  margin: 0px;
-}
-
-.menuTitles {
-  text-align: center;
-}
-
-.trash {
-  --background-hover: #3880ff;
-  --background-hover-opacity: 0.5;
-  --color-hover: white;
-}
-
-.menuBookmark {
-  vertical-align: middle;
-  color: #f7c920;
-}
-
-.savedTranslationLabel {
-  font-size: 1.2em;
-
-  text-decoration: underline;
-  font-weight: 500;
-}
-
-.savedItems {
-  --inner-padding-end: none;
-}
-
-.signOut {
-  font-size: 1.1em;
-  font-weight: 450;
-  border-bottom: 2px solid #bdc3c7;
 }
 
 .has-header {

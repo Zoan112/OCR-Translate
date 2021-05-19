@@ -1,13 +1,11 @@
 /* eslint-disable */
-import { ref, onMounted, watch } from "vue";
+import { ref } from "vue";
 import {
   Plugins,
   CameraResultType,
   CameraSource,
   CameraDirection
 } from "@capacitor/core";
-
-import { isPlatform } from "@ionic/vue";
 
 var base = ref("");
 
