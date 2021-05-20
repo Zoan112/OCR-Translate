@@ -1,0 +1,7 @@
+{
+  "name": "OCR-Translate",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue"
+}
