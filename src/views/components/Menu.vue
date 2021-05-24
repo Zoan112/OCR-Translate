@@ -75,7 +75,7 @@
 </template>
 
 <script>
-import { defineComponent, ref } from "vue";
+import { defineComponent, onMounted, ref } from "vue";
 
 import { useRouter } from "vue-router";
 import { bookmark, trash } from "ionicons/icons";
@@ -105,7 +105,8 @@ import {
 
 export default defineComponent({
   props: [
-    "savedTranslations",
+    /// "savedTranslations",
+    //Props for usermenu
     "userAvatar",
     "userName",
     "userEmail",
@@ -128,7 +129,16 @@ export default defineComponent({
     IonLabel
   },
   setup(props, { emit }) {
+    onMounted(() => {
+      console.log("menu mounted");
+      console.log(props.userUid);
+      retriveFirestore();
+    });
+
     const router = useRouter();
+
+    ///Stored transaltion
+    const savedTranslations = ref([]);
 
     //SignOut
     const signOut = () => {
@@ -136,29 +146,33 @@ export default defineComponent({
       router.push({ path: "login" });
     };
 
+    //Close Menu
     const closeMenu = () => {
       menuController.close("custom");
     };
 
-    ///Stored transaltion
     // Select saved item
 
     const selectSavedItem = firestoreId => {
-      console.log(props.savedTranslations);
-      console.log(props.savedTranslations[0]);
+      console.log(firestoreId);
+      console.log(savedTranslations);
+      console.log(savedTranslations.value);
+      console.log(savedTranslations.value[0].id);
       console.log(firestoreId);
 
-      const result = props.savedTranslations.find(
+      const result = savedTranslations.value.find(
         ({ id }) => id === firestoreId
       );
+      console.log(result);
+      console.log(result.image);
       base.value = result.image;
-      emit("docSelection", result.ocrText, result.translatedText);
+      emit("docSelection", result.ocrText, result.translatedText, result.image);
     };
 
     //
     //Delete Item
     const deleteDoc = firestoreId => {
-      props.savedTranslations.value = [];
+      savedTranslations.value = [];
       console.log(firestoreId);
       console.log(props.userUid);
       console.log(props.userUid.value);
@@ -177,7 +191,37 @@ export default defineComponent({
         });
     };
 
-    return { bookmark, trash, signOut, closeMenu, selectSavedItem, deleteDoc };
+    ///
+
+    const retriveFirestore = () => {
+      savedTranslations.value = [];
+      firebase
+        .firestore()
+        .collection(props.userUid)
+        .onSnapshot(querySnapshot => {
+          querySnapshot.forEach(doc => {
+            const data = {
+              id: doc.id,
+              image: doc.data().imageBase64,
+              ocrText: doc.data().ocrText,
+              translatedText: doc.data().translatedText
+            };
+            console.log(doc.data());
+            savedTranslations.value.push(data);
+            console.log(doc.id, " => ", doc.data());
+          });
+        });
+    };
+
+    return {
+      bookmark,
+      trash,
+      signOut,
+      closeMenu,
+      selectSavedItem,
+      deleteDoc,
+      savedTranslations
+    };
   }
 });
 </script>
