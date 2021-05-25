@@ -11,13 +11,14 @@
         <ion-card v-if="toogleImg">
           <img v-if="toogleImg" :src="'data:image/jpeg;base64,' + base" />
           <br />
-          <ion-button @click="processOcr" v-if="toogleImg">Process</ion-button>
+          <ion-button @click="processOcr(base)" v-if="toogleImg"
+            >Process</ion-button
+          >
 
           <ion-card-content>
             <ion-textarea
               v-if="showTranslateBtn"
-              :value="ocrRslt"
-              :v-bind="currentOcrText"
+              v-model="ocrRslt"
               auto-grow
             ></ion-textarea>
           </ion-card-content>
@@ -107,7 +108,9 @@ import globalToast from "@/composables/Toast";
 import { presentLoading, closeLoading } from "@/composables/LoadingScreen";
 import { openPicker, selectedLang } from "@/composables/langPicker";
 import { defineComponent, ref } from "@vue/runtime-core";
-import { watch, toRefs } from "vue";
+import { watch, toRefs, computed } from "vue";
+
+import { processOcr, ocrRslt } from "@/composables/processOcr";
 
 import { base, usePhotoGallery } from "@/composables/usePhotoGallery";
 
@@ -122,24 +125,34 @@ export default defineComponent({
     IonTextarea,
     IonButton,
     IonCol,
-    IonIcon
+    IonIcon,
+    ocrRslt
   },
 
   setup(props) {
-    const showTranslateBtn = ref(false);
     /*   const propsrefs = toRefs(props);
     console.log(propsrefs);
     console.log(propsrefs.ocrRslt);
     console.log(propsrefs.ocrRslt.value);
+
 */
 
+    const showTranslateBtn = ref(false);
+
+    const Rslt = ref();
+
     const base = toRefs(props).photo;
+    // const ocrRslt = ref();
 
-    const currentOcrText = ref();
-    const ocrRslt = toRefs(props).fetchedOcrRslt;
-    const translatedText = toRefs(props).translatedText;
+    //const translatedText = ref();
 
-    // const base = ref(props.photo);
+    const localProps = computed(() =>
+      (ocrRslt.value = props.fetchedOcrRslt)(
+        (translatedText.value = props.translatedText)
+      )
+    );
+
+    // const currentOcrText = ref();
 
     const testing = ref(props.photo);
 
@@ -148,8 +161,18 @@ export default defineComponent({
     let toogleImg = ref(false);
 
     const debug = () => {
+      ocrRslt.value = "www";
+      /*
+      console.log("RSLT", Rslt);
+      console.log("RSLT", Rslt.value);
       console.log("currentOcrText:", currentOcrText.value);
       console.log("ocrRslt:", ocrRslt.value);
+      console.log("ocrRslt:", ocrRslt);
+      console.log("ocrRslt:", ocrRslt.value);
+      localProps;
+      localProps();*/
+      // console.log("ocrRslt:", ocrRslt.value.fetchedOcrRslt);
+      //console.log("ocrRslt:", ocrRslt.value.translatedText);
     };
 
     watch(base, () => {
@@ -161,15 +184,6 @@ export default defineComponent({
         toogleImg.value = true;
       }
     });
-    /*
-    watch(
-      () => base,
-      (newValue, oldValue) => alert("watch")
-    );
-
-    */
-
-    ///Conditonal rendering translate button
 
     watch(ocrRslt, () => {
       if (ocrRslt.value === "") {
@@ -373,6 +387,7 @@ export default defineComponent({
         });
     };
 
+    /*
     //Send base64 Img to google functions
     const processOcr = () => {
       // firebase.functions().useEmulator("localhost", 5001);
@@ -401,7 +416,7 @@ export default defineComponent({
           }
         });
     };
-
+*/
     //Add translation to clipboard
     const addToClipboard = () => {
       navigator.clipboard.writeText(translatedText.value);
@@ -425,8 +440,9 @@ export default defineComponent({
       translatedText,
       saveFirestore,
       base,
-      currentOcrText,
-      debug
+      debug,
+      localProps,
+      Rslt
     };
   }
 });

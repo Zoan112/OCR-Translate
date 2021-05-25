@@ -63,7 +63,14 @@ import {
   menuController
 } from "@ionic/vue";
 
-import { defineComponent, ref, watch, watchEffect, onMounted } from "vue";
+import {
+  defineComponent,
+  ref,
+  watch,
+  watchEffect,
+  onMounted,
+  toRefs
+} from "vue";
 
 import { menu } from "ionicons/icons";
 
@@ -91,7 +98,7 @@ export default defineComponent({
   },
   setup() {
     ///Global VARS
-    const fetchedOcrRslt = ref("www");
+    const fetchedOcrRslt = ref();
     const translatedText = ref("xxx");
     const photo = ref("");
 
